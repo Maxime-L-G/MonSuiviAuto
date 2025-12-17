@@ -37,7 +37,7 @@ export async function updateVehicle(
   return prisma.vehicle.updateMany({
     where: {
       id,
-      userId, // 🔒 ownership
+      userId,
     },
     data,
   })
@@ -47,7 +47,7 @@ export async function deleteVehicle(id: string, userId: string) {
   return prisma.vehicle.deleteMany({
     where: {
       id,
-      userId, // 🔒 ownership
+      userId,
     },
   })
 }

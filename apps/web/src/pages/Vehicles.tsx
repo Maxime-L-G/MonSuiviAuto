@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { apiFetch } from "../lib/api"
+import { createPortal } from "react-dom"
+
 
 type Vehicle = {
   id: string
@@ -36,10 +38,12 @@ function Modal({
   children: React.ReactNode
 }) {
   if (!open) return null
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
       <div className="absolute inset-0 bg-slate-950/50" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-2xl border border-border bg-surface2 shadow-sm">
+
+      <div className="relative w-full max-w-lg rounded-2xl border border-border bg-surface2 shadow-xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="text-base font-semibold">{title}</div>
           <button
@@ -49,19 +53,26 @@ function Modal({
             Fermer
           </button>
         </div>
+
         <div className="p-5">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
+
+
+
 
 export function Vehicles() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const [open, setOpen] = useState(false)
+  const [openForm, setOpenForm] = useState(false)
   const [editing, setEditing] = useState<Vehicle | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Vehicle | null>(null)
+
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -69,11 +80,12 @@ export function Vehicles() {
 
   const [make, setMake] = useState("")
   const [model, setModel] = useState("")
-  const [year, setYear] = useState<number>(currentYear)
-  const [currentKm, setCurrentKm] = useState<number>(0)
+  const [year, setYear] = useState(currentYear)
+  const [currentKm, setCurrentKm] = useState(0)
 
   async function loadVehicles() {
     setLoading(true)
+    setError(null)
     try {
       const data = await apiFetch<{ vehicles: Vehicle[] }>("/vehicles")
       setVehicles(data.vehicles)
@@ -88,14 +100,18 @@ export function Vehicles() {
     void loadVehicles()
   }, [])
 
-  function openCreate() {
-    setEditing(null)
+  function resetForm() {
+    setFormError(null)
     setMake("")
     setModel("")
     setYear(currentYear)
     setCurrentKm(0)
-    setFormError(null)
-    setOpen(true)
+  }
+
+  function openCreate() {
+    setEditing(null)
+    resetForm()
+    setOpenForm(true)
   }
 
   function openEdit(v: Vehicle) {
@@ -105,14 +121,14 @@ export function Vehicles() {
     setYear(v.year)
     setCurrentKm(v.currentKm)
     setFormError(null)
-    setOpen(true)
+    setOpenForm(true)
   }
 
-  async function submit() {
+  async function submitForm() {
     setFormError(null)
 
     if (!make.trim() || !model.trim()) {
-      setFormError("Marque et modèle obligatoires.")
+      setFormError("La marque et le modèle sont obligatoires.")
       return
     }
 
@@ -137,7 +153,7 @@ export function Vehicles() {
         })
       }
 
-      setOpen(false)
+      setOpenForm(false)
       await loadVehicles()
     } catch {
       setFormError("Erreur lors de l’enregistrement.")
@@ -146,11 +162,12 @@ export function Vehicles() {
     }
   }
 
-  async function remove(id: string) {
-    if (!confirm("Supprimer ce véhicule ?")) return
+  async function deleteVehicle() {
+    if (!confirmDelete) return
 
     try {
-      await apiFetch(`/vehicles/${id}`, { method: "DELETE" })
+      await apiFetch(`/vehicles/${confirmDelete.id}`, { method: "DELETE" })
+      setConfirmDelete(null)
       await loadVehicles()
     } catch {
       alert("Erreur lors de la suppression.")
@@ -162,7 +179,9 @@ export function Vehicles() {
       <div className="flex items-center justify-between">
         <div>
           <div className="text-lg font-semibold">Véhicules</div>
-          <div className="text-sm text-muted">Gestion de tes véhicules</div>
+          <div className="text-sm text-muted">
+            Gestion de tes véhicules
+          </div>
         </div>
 
         <button
@@ -173,14 +192,21 @@ export function Vehicles() {
         </button>
       </div>
 
-      {loading && <div className="mt-4 text-sm text-muted">Chargement...</div>}
+      {loading && <div className="mt-4 text-sm text-muted">Chargement…</div>}
       {error && <div className="mt-4 text-sm text-danger">{error}</div>}
 
       {!loading && !error && (
         <div className="mt-4 grid gap-3">
-          {vehicles.map((v) => (
-            <div key={v.id} className="rounded-xl border border-border bg-white/70 p-4">
-              <div className="flex items-center justify-between">
+          {vehicles.length === 0 ? (
+            <div className="text-sm text-muted">
+              Aucun véhicule pour le moment.
+            </div>
+          ) : (
+            vehicles.map((v) => (
+              <div
+                key={v.id}
+                className="rounded-xl border border-border bg-white/70 p-4 flex items-center justify-between"
+              >
                 <div>
                   <div className="font-medium">
                     {v.make} {v.model}{" "}
@@ -200,21 +226,21 @@ export function Vehicles() {
                   </button>
                   <button
                     className="rounded-lg border border-border px-3 py-1.5 text-sm text-danger hover:bg-red-50"
-                    onClick={() => remove(v.id)}
+                    onClick={() => setConfirmDelete(v)}
                   >
                     Supprimer
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
 
       <Modal
         title={editing ? "Modifier le véhicule" : "Ajouter un véhicule"}
-        open={open}
-        onClose={() => setOpen(false)}
+        open={openForm}
+        onClose={() => setOpenForm(false)}
       >
         {formError && (
           <div className="mb-4 rounded-xl border border-border bg-white p-3 text-sm text-danger">
@@ -226,19 +252,18 @@ export function Vehicles() {
           <div>
             <label className="text-sm font-medium">Marque</label>
             <input
-              className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+              className="mt-1 w-full rounded-xl border border-border px-3 py-2"
               value={make}
               onChange={(e) => setMake(e.target.value)}
-              placeholder="Peugeot"
             />
           </div>
+
           <div>
             <label className="text-sm font-medium">Modèle</label>
             <input
-              className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+              className="mt-1 w-full rounded-xl border border-border px-3 py-2"
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              placeholder="208"
             />
           </div>
 
@@ -247,38 +272,69 @@ export function Vehicles() {
               <label className="text-sm font-medium">Année</label>
               <input
                 type="number"
-                className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+                className="mt-1 w-full rounded-xl border border-border px-3 py-2"
                 value={year}
                 onChange={(e) => setYear(Number(e.target.value))}
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium">Kilométrage actuel</label>
+              <label className="text-sm font-medium">
+                Kilométrage actuel
+              </label>
               <input
                 type="number"
-                className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+                className="mt-1 w-full rounded-xl border border-border px-3 py-2"
                 value={currentKm}
                 onChange={(e) => setCurrentKm(Number(e.target.value))}
               />
             </div>
           </div>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 pt-2">
             <button
               className="rounded-xl border px-4 py-2"
-              onClick={() => setOpen(false)}
+              onClick={() => setOpenForm(false)}
             >
               Annuler
             </button>
             <button
               className="rounded-xl bg-primary px-4 py-2 text-white"
+              onClick={submitForm}
               disabled={saving}
-              onClick={submit}
             >
-              {saving ? "..." : "Enregistrer"}
+              {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Supprimer le véhicule"
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+      >
+        <p className="text-sm text-muted">
+          Es-tu sûr de vouloir supprimer{" "}
+          <strong>
+            {confirmDelete?.make} {confirmDelete?.model}
+          </strong>{" "}
+          ?
+        </p>
+
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            className="rounded-xl border px-4 py-2"
+            onClick={() => setConfirmDelete(null)}
+          >
+            Annuler
+          </button>
+          <button
+            className="rounded-xl bg-danger px-4 py-2 text-white"
+            onClick={deleteVehicle}
+          >
+            Supprimer
+          </button>
         </div>
       </Modal>
     </Card>

@@ -32,7 +32,7 @@ export function Login() {
   }
 
   return (
-    <div className="h-full flex items-center justify-center p-6 bg-[radial-gradient(ellipse_at_top,_rgba(37,99,235,0.18),_transparent_55%),radial-gradient(ellipse_at_bottom,_rgba(2,132,199,0.12),_transparent_55%)]">
+    <div className="h-full flex items-center justify-center p-6 bg-[radial-gradient(ellipse_at_top,rgba(37,99,235,0.18),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(2,132,199,0.12),transparent_55%)]">
       <div className="w-full max-w-md rounded-2xl border border-border bg-surface/80 backdrop-blur p-6 shadow-sm">
         <div className="mb-6">
           <h1 className="mt-3 text-2xl font-semibold">Connexion</h1>
