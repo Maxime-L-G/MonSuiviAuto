@@ -21,10 +21,22 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 
   const res = await fetch(`${API_URL}${path}`, { ...init, headers })
 
-  if (!res.ok) {
+    if (!res.ok) {
     const text = await res.text().catch(() => "")
     throw new Error(`${res.status} ${res.statusText} ${text}`)
   }
 
+  // ✅ Cas classique: DELETE renvoie 204 No Content
+  if (res.status === 204) {
+    return undefined as T
+  }
+
+  // Si pas de contenu JSON, on évite de parser
+  const contentType = res.headers.get("content-type") ?? ""
+  if (!contentType.includes("application/json")) {
+    return (await res.text()) as unknown as T
+  }
+
   return res.json() as Promise<T>
+
 }

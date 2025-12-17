@@ -19,3 +19,35 @@ export async function list(req: Request, res: Response) {
   const vehicles = await service.listVehicles(userId)
   return res.json({ vehicles })
 }
+
+export async function update(req: Request, res: Response) {
+  const userId = (req as any).user.id as string
+  const { id } = req.params
+
+  const parsed = createVehicleSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "VALIDATION_ERROR" })
+  }
+
+  const result = await service.updateVehicle(id, userId, parsed.data)
+
+  if (result.count === 0) {
+    return res.status(404).json({ error: "VEHICLE_NOT_FOUND" })
+  }
+
+  return res.json({ success: true })
+}
+
+export async function remove(req: Request, res: Response) {
+  const userId = (req as any).user.id as string
+  const { id } = req.params
+
+  const result = await service.deleteVehicle(id, userId)
+
+  if (result.count === 0) {
+    return res.status(404).json({ error: "VEHICLE_NOT_FOUND" })
+  }
+
+  return res.status(204).send()
+}
+

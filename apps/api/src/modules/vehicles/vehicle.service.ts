@@ -23,3 +23,32 @@ export async function listVehicles(userId: string) {
     orderBy: { createdAt: "desc" },
   })
 }
+
+export async function updateVehicle(
+  id: string,
+  userId: string,
+  data: {
+    make: string
+    model: string
+    year: number
+    currentKm: number
+  }
+) {
+  return prisma.vehicle.updateMany({
+    where: {
+      id,
+      userId, // 🔒 ownership
+    },
+    data,
+  })
+}
+
+export async function deleteVehicle(id: string, userId: string) {
+  return prisma.vehicle.deleteMany({
+    where: {
+      id,
+      userId, // 🔒 ownership
+    },
+  })
+}
+
