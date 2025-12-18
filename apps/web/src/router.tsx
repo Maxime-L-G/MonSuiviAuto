@@ -4,6 +4,7 @@ import { RequireAuth } from "./app/RequireAuth"
 import { Login } from "./pages/Login"
 import { Dashboard } from "./pages/Dashboard"
 import { Vehicles } from "./pages/Vehicles"
+import { VehicleDetails } from "./pages/VehicleDetails"
 
 export const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Dashboard /> },
           { path: "vehicles", element: <Vehicles /> },
+          { path: "vehicles/:id", element: <VehicleDetails /> }
         ],
       },
     ],

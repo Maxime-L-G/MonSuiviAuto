@@ -52,3 +52,13 @@ export async function deleteVehicle(id: string, userId: string) {
   })
 }
 
+export async function getVehicleById(id: string, userId: string) {
+  return prisma.vehicle.findFirst({
+    where: {
+      id,
+      userId,
+    },
+  })
+}
+
+

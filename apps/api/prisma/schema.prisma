@@ -38,4 +38,34 @@ model Vehicle {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  maintenances Maintenance[]
 }
+
+enum MaintenanceType {
+  OIL_CHANGE
+  TIRES
+  BRAKES
+  BATTERY
+  INSPECTION
+  REPAIR
+  OTHER
+}
+
+model Maintenance {
+  id        String          @id @default(cuid())
+  vehicleId String
+  type      MaintenanceType @default(OTHER)
+  title     String
+  date      DateTime
+  mileage   Int
+  costCents Int             @default(0)
+  notes     String?         @db.Text
+
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([vehicleId])
+}
+

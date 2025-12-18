@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { Link } from "react-router-dom"
 import { apiFetch } from "../lib/api"
 import { createPortal } from "react-dom"
 
@@ -40,7 +41,7 @@ function Modal({
   if (!open) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-6">
       <div className="absolute inset-0 bg-slate-950/50" onClick={onClose} />
 
       <div className="relative w-full max-w-lg rounded-2xl border border-border bg-surface2 shadow-xl">
@@ -209,9 +210,15 @@ export function Vehicles() {
               >
                 <div>
                   <div className="font-medium">
-                    {v.make} {v.model}{" "}
+                    <Link
+                      to={`/app/vehicles/${v.id}`}
+                      className="hover:underline"
+                    >
+                      {v.make} {v.model}
+                    </Link>{" "}
                     <span className="text-muted">({v.year})</span>
                   </div>
+
                   <div className="text-sm text-muted">
                     {v.currentKm.toLocaleString()} km
                   </div>

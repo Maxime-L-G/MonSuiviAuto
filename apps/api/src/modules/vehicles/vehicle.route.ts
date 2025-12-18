@@ -6,6 +6,9 @@ export const vehicleRouter = Router()
 
 vehicleRouter.post("/", requireAuth, controller.create)
 vehicleRouter.get("/", requireAuth, controller.list)
+vehicleRouter.get("/:id", requireAuth, controller.getOne)
 vehicleRouter.patch("/:id", requireAuth, controller.update)
 vehicleRouter.delete("/:id", requireAuth, controller.remove)
+
+
 
