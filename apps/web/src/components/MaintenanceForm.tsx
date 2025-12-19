@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react"
 import { apiFetch } from "../lib/api"
 import { createPortal } from "react-dom"
@@ -17,6 +18,10 @@ export function MaintenanceForm({
   const [date, setDate] = useState("")
   const [mileage, setMileage] = useState(0)
   const [cost, setCost] = useState(0)
+  const [type, setType] = useState<
+  "OIL_CHANGE" | "TIRES" | "BRAKES" | "BATTERY" | "INSPECTION" | "REPAIR" | "OTHER"
+  >("OTHER")
+
 
   if (!open) return null
 
@@ -24,10 +29,11 @@ export function MaintenanceForm({
     await apiFetch(`/vehicles/${vehicleId}/maintenances`, {
       method: "POST",
       body: JSON.stringify({
+        type,
         title,
         date: new Date(date).toISOString(),
         mileage,
-        costCents: cost * 100,
+        costCents: Math.round(cost * 100),
       }),
     })
     onClose()
@@ -38,7 +44,23 @@ export function MaintenanceForm({
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50">
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 space-y-4">
         <h3 className="text-lg font-semibold">Ajouter un entretien</h3>
-
+        <div>
+          <label className="text-sm font-medium">Type d’entretien</label>
+          <select
+            className="mt-1 w-full rounded-xl border px-3 py-2"
+            value={type}
+            onChange={(e) => setType(e.target.value as any)}
+          >
+            <option value="OIL_CHANGE">Vidange</option>
+            <option value="TIRES">Pneus</option>
+            <option value="BRAKES">Freins</option>
+            <option value="BATTERY">Batterie</option>
+            <option value="INSPECTION">Contrôle technique</option>
+            <option value="REPAIR">Réparation</option>
+            <option value="OTHER">Autre</option>
+          </select>
+        </div>
+        
         <div>
           <label className="text-sm font-medium">Intitulé</label>
           <input

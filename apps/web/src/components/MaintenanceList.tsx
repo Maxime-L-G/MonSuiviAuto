@@ -14,6 +14,20 @@ type Maintenance = {
   notes?: string
 }
 
+function typeLabel(t: string) {
+  const map: Record<string, string> = {
+    OIL_CHANGE: "Vidange",
+    TIRES: "Pneus",
+    BRAKES: "Freins",
+    BATTERY: "Batterie",
+    INSPECTION: "CT",
+    REPAIR: "Réparation",
+    OTHER: "Autre",
+  }
+  return map[t] ?? t
+}
+
+
 export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
   const [items, setItems] = useState<Maintenance[]>([])
   const [open, setOpen] = useState(false)
@@ -57,6 +71,9 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
             className="flex justify-between rounded-xl border border-border bg-white p-4"
           >
             <div>
+              <div className="mb-1 inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-xs text-muted">
+                {typeLabel(m.type)}
+              </div>
               <div className="font-medium">{m.title}</div>
               <div className="text-sm text-muted">
                 {new Date(m.date).toLocaleDateString()} · {m.mileage} km
