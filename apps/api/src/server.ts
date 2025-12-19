@@ -5,6 +5,8 @@ import helmet from "helmet"
 import { authRouter } from "./modules/auth/auth.routes"
 import { vehicleRouter } from "./modules/vehicles/vehicle.route"
 import { maintenanceRouter } from "./modules/maintenances/maintenance.routes"
+import { dashboardRouter } from "./modules/dashboard/dashboard.routes"
+
 
 const app = express()
 
@@ -18,6 +20,7 @@ app.use("/auth", authRouter)
 
 app.use("/vehicles", vehicleRouter)
 app.use(maintenanceRouter)
+app.use(dashboardRouter)
 
 const PORT = process.env.PORT || 4000
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`))
