@@ -186,7 +186,7 @@ export function Vehicles() {
         </div>
 
         <button
-          className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-95"
+          className="btn-primary"
           onClick={openCreate}
         >
           Ajouter
@@ -226,13 +226,13 @@ export function Vehicles() {
 
                 <div className="flex gap-2">
                   <button
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-slate-100"
+                    className="btn-secondary py-1.5"
                     onClick={() => openEdit(v)}
                   >
                     Modifier
                   </button>
                   <button
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm text-danger hover:bg-red-50"
+                    className="btn-secondary py-1.5 text-danger hover:bg-red-50"
                     onClick={() => setConfirmDelete(v)}
                   >
                     Supprimer
@@ -300,13 +300,13 @@ export function Vehicles() {
 
           <div className="flex justify-end gap-2 pt-2">
             <button
-              className="rounded-xl border px-4 py-2"
+              className="btn-secondary"
               onClick={() => setOpenForm(false)}
             >
               Annuler
             </button>
             <button
-              className="rounded-xl bg-primary px-4 py-2 text-white"
+              className="btn-primary"
               onClick={submitForm}
               disabled={saving}
             >
@@ -331,13 +331,13 @@ export function Vehicles() {
 
         <div className="mt-6 flex justify-end gap-2">
           <button
-            className="rounded-xl border px-4 py-2"
+            className="btn-secondary"
             onClick={() => setConfirmDelete(null)}
           >
             Annuler
           </button>
           <button
-            className="rounded-xl bg-danger px-4 py-2 text-white"
+            className="btn-danger"
             onClick={deleteVehicle}
           >
             Supprimer

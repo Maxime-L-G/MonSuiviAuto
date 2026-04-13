@@ -105,14 +105,14 @@ export function MaintenanceForm({
 
         <div className="flex justify-end gap-2 pt-2">
           <button
-            className="rounded-xl border px-4 py-2"
+            className="btn-secondary"
             onClick={onClose}
           >
             Annuler
           </button>
 
           <button
-            className="rounded-xl bg-primary px-4 py-2 text-white"
+            className="btn-primary"
             onClick={submit}
           >
             Enregistrer

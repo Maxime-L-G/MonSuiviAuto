@@ -49,7 +49,7 @@ export function AppLayout() {
             </div>
 
             <button
-              className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-95"
+              className="btn-primary"
               onClick={() => {
                 clearToken()
                 nav("/", { replace: true })

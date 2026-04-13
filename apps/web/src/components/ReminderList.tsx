@@ -71,7 +71,7 @@ export function ReminderList({ vehicleId }: { vehicleId: string }) {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Rappels</h2>
         <button
-          className="rounded-xl bg-primary px-4 py-2 text-sm text-white"
+          className="btn-primary"
           onClick={() => setOpen(true)}
         >
           Ajouter
