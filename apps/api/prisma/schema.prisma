@@ -37,8 +37,10 @@ model Vehicle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
   maintenances Maintenance[]
+  reminders    Reminder[]
+
+  @@index([userId])
 }
 
 enum MaintenanceType {
@@ -69,3 +71,35 @@ model Maintenance {
   @@index([vehicleId])
 }
 
+enum ReminderType {
+  INSPECTION
+  INSURANCE
+  OIL_CHANGE
+  CUSTOM
+}
+
+enum ReminderStatus {
+  OPEN
+  DONE
+}
+
+model Reminder {
+  id          String         @id @default(cuid())
+  vehicleId   String
+  type        ReminderType   @default(CUSTOM)
+  title       String
+  status      ReminderStatus @default(OPEN)
+
+  dueDate     DateTime?
+  dueMileage  Int?
+
+  notes       String?        @db.Text
+
+  vehicle     Vehicle        @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([vehicleId])
+  @@index([status])
+}
