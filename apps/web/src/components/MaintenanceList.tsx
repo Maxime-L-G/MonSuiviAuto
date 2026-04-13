@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
- 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { apiFetch } from "../lib/api"
 import { MaintenanceForm } from "./MaintenanceForm"
 
@@ -32,20 +30,20 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
   const [items, setItems] = useState<Maintenance[]>([])
   const [open, setOpen] = useState(false)
 
-  async function load() {
+  const load = useCallback(async () => {
     const res = await apiFetch<{ maintenances: Maintenance[] }>(
       `/vehicles/${vehicleId}/maintenances`
     )
     setItems(res.maintenances)
-  }
+  }, [vehicleId])
 
   useEffect(() => {
-    load()
-  }, [vehicleId])
+    void load()
+  }, [load])
 
   async function remove(id: string) {
     await apiFetch(`/maintenances/${id}`, { method: "DELETE" })
-    load()
+    await load()
   }
 
   return (
@@ -53,7 +51,7 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Entretiens</h2>
         <button
-          className="rounded-xl bg-primary px-4 py-2 text-sm text-white"
+          className="btn-primary"
           onClick={() => setOpen(true)}
         >
           Ajouter

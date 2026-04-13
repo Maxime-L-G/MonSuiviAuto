@@ -61,7 +61,7 @@ export function Login() {
         />
 
         <button
-          className="w-full rounded-xl bg-primary px-3 py-2 text-white font-medium shadow-sm hover:opacity-95 disabled:opacity-60"
+          className="w-full btn-primary py-2"
           onClick={onSubmit}
           disabled={loading}
         >

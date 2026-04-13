@@ -131,14 +131,14 @@ export function ReminderForm({
 
           <div className="flex justify-end gap-2 pt-2">
             <button
-              className="rounded-xl border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+              className="btn-secondary"
               onClick={onClose}
               disabled={saving}
             >
               Annuler
             </button>
             <button
-              className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-95 disabled:opacity-60"
+              className="btn-primary"
               onClick={submit}
               disabled={saving}
             >
