@@ -23,9 +23,23 @@ dashboardRouter.get("/dashboard/summary", requireAuth, async (req, res) => {
     _sum: { costCents: true },
   })
 
+  const upcomingReminders = await prisma.reminder.findMany({
+    where: {
+      status: "OPEN",
+      vehicle: { userId },
+      dueDate: { gte: new Date(), lte: new Date(new Date().setDate(new Date().getDate() + 30)) },
+    },
+    include: { vehicle: { select: { id: true, make: true, model: true } } },
+    orderBy: { dueDate: "asc" },
+    take: 5,
+  })
+
   res.json({
     vehiclesCount,
     spendMonthCents: monthAgg._sum.costCents ?? 0,
     spendYearCents: yearAgg._sum.costCents ?? 0,
+    upcomingReminders,
   })
 })
+
+
