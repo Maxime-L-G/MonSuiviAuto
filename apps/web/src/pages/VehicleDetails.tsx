@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { apiFetch } from "../lib/api"
 import { MaintenanceList } from "../components/MaintenanceList"
+import { ReminderList } from "../components/ReminderList"
 
 type Vehicle = {
   id: string
@@ -39,6 +40,7 @@ export function VehicleDetails() {
       </div>
 
       <MaintenanceList vehicleId={vehicle.id} />
+      <ReminderList vehicleId={vehicle.id} />
     </div>
   )
 }
