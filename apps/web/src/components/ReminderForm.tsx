@@ -87,7 +87,7 @@ export function ReminderForm({
           <div>
             <label className="text-sm font-medium">Type</label>
             <select
-              className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2"
+              className="mt-1 input-field"
               value={type}
               onChange={(e) => setType(e.target.value as ReminderType)}
             >
@@ -101,7 +101,7 @@ export function ReminderForm({
           <div>
             <label className="text-sm font-medium">Titre</label>
             <input
-              className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2"
+              className="mt-1 input-field"
               placeholder="Ex : Contrôle technique"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -112,7 +112,7 @@ export function ReminderForm({
             <label className="text-sm font-medium">Date d’échéance</label>
             <input
               type="date"
-              className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2"
+              className="mt-1 input-field"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
             />
@@ -121,7 +121,7 @@ export function ReminderForm({
           <div>
             <label className="text-sm font-medium">Notes</label>
             <textarea
-              className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2"
+              className="mt-1 input-field"
               rows={3}
               placeholder="Optionnel"
               value={notes}

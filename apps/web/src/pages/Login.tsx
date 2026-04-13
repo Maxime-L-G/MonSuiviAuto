@@ -47,7 +47,7 @@ export function Login() {
 
         <label className="text-sm font-medium">Email</label>
         <input
-          className="mt-1 mb-4 w-full rounded-xl border border-border bg-white/90 px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+          className="mt-1 mb-4 input-field"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -55,7 +55,7 @@ export function Login() {
         <label className="text-sm font-medium">Mot de passe</label>
         <input
           type="password"
-          className="mt-1 mb-6 w-full rounded-xl border border-border bg-white/90 px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+          className="mt-1 mb-6 input-field"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />

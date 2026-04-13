@@ -259,7 +259,7 @@ export function Vehicles() {
           <div>
             <label className="text-sm font-medium">Marque</label>
             <input
-              className="mt-1 w-full rounded-xl border border-border px-3 py-2"
+              className="mt-1 input-field"
               value={make}
               onChange={(e) => setMake(e.target.value)}
             />
@@ -268,7 +268,7 @@ export function Vehicles() {
           <div>
             <label className="text-sm font-medium">Modèle</label>
             <input
-              className="mt-1 w-full rounded-xl border border-border px-3 py-2"
+              className="mt-1 input-field"
               value={model}
               onChange={(e) => setModel(e.target.value)}
             />
@@ -279,7 +279,7 @@ export function Vehicles() {
               <label className="text-sm font-medium">Année</label>
               <input
                 type="number"
-                className="mt-1 w-full rounded-xl border border-border px-3 py-2"
+                className="mt-1 input-field"
                 value={year}
                 onChange={(e) => setYear(Number(e.target.value))}
               />
@@ -291,7 +291,7 @@ export function Vehicles() {
               </label>
               <input
                 type="number"
-                className="mt-1 w-full rounded-xl border border-border px-3 py-2"
+                className="mt-1 input-field"
                 value={currentKm}
                 onChange={(e) => setCurrentKm(Number(e.target.value))}
               />

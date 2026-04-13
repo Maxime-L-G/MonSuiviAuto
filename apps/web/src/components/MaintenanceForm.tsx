@@ -47,7 +47,7 @@ export function MaintenanceForm({
         <div>
           <label className="text-sm font-medium">Type d’entretien</label>
           <select
-            className="mt-1 w-full rounded-xl border px-3 py-2"
+            className="mt-1 input-field"
             value={type}
             onChange={(e) => setType(e.target.value as any)}
           >
@@ -64,7 +64,7 @@ export function MaintenanceForm({
         <div>
           <label className="text-sm font-medium">Intitulé</label>
           <input
-            className="mt-1 w-full rounded-xl border px-3 py-2"
+            className="mt-1 input-field"
             placeholder="Ex : Changement des pneus"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -75,7 +75,7 @@ export function MaintenanceForm({
           <label className="text-sm font-medium">Date de l’entretien</label>
           <input
             type="date"
-            className="mt-1 w-full rounded-xl border px-3 py-2"
+            className="mt-1 input-field"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -85,7 +85,7 @@ export function MaintenanceForm({
           <label className="text-sm font-medium">Kilométrage du véhicule</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border px-3 py-2"
+            className="mt-1 input-field"
             placeholder="Ex : 65000"
             value={mileage}
             onChange={(e) => setMileage(Number(e.target.value))}
@@ -96,7 +96,7 @@ export function MaintenanceForm({
           <label className="text-sm font-medium">Coût (€)</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border px-3 py-2"
+            className="mt-1 input-field"
             placeholder="Ex : 120"
             value={cost}
             onChange={(e) => setCost(Number(e.target.value))}

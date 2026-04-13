@@ -19,3 +19,9 @@
 
 html, body, #root { height: 100%; }
 body { background: var(--color-bg); color: var(--color-text); }
+
+@layer components {
+  .input-field {
+    @apply w-full rounded-xl border border-border bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30;
+  }
+}
