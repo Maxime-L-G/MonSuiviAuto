@@ -1,64 +1,30 @@
-import { prisma } from "../../config/prisma"
+import * as repo from "./vehicle.repository"
 
 export async function createVehicle(
   userId: string,
-  data: {
-    make: string
-    model: string
-    year: number
-    currentKm: number
-  }
+  data: { make: string; model: string; year: number; currentKm: number }
 ) {
-  return prisma.vehicle.create({
-    data: {
-      ...data,
-      userId,
-    },
-  })
+  return repo.dbCreateVehicle(userId, data)
 }
 
 export async function listVehicles(userId: string) {
-  return prisma.vehicle.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  })
+  return repo.dbListVehicles(userId)
+}
+
+export async function getVehicleById(id: string, userId: string) {
+  return repo.dbGetVehicleById(id, userId)
 }
 
 export async function updateVehicle(
   id: string,
   userId: string,
-  data: {
-    make: string
-    model: string
-    year: number
-    currentKm: number
-  }
+  data: { make: string; model: string; year: number; currentKm: number }
 ) {
-  return prisma.vehicle.updateMany({
-    where: {
-      id,
-      userId,
-    },
-    data,
-  })
+  const result = await repo.dbUpdateVehicle(id, userId, data)
+  return result.count > 0
 }
 
 export async function deleteVehicle(id: string, userId: string) {
-  return prisma.vehicle.deleteMany({
-    where: {
-      id,
-      userId,
-    },
-  })
+  const result = await repo.dbDeleteVehicle(id, userId)
+  return result.count > 0
 }
-
-export async function getVehicleById(id: string, userId: string) {
-  return prisma.vehicle.findFirst({
-    where: {
-      id,
-      userId,
-    },
-  })
-}
-
-

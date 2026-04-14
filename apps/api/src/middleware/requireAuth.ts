@@ -30,7 +30,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
       return res.status(401).json({ error: "UNAUTHORIZED" })
     }
 
-    ;(req as any).user = { id: userId, role } satisfies AuthUser
+    req.user = { id: userId, role } satisfies AuthUser
 
     return next()
   } catch {
