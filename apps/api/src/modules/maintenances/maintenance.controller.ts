@@ -3,7 +3,7 @@ import { createMaintenanceSchema } from "./maintenance.schema"
 import * as service from "./maintenance.service"
 
 export async function list(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { vehicleId } = req.params
 
   const maintenances = await service.listMaintenances(userId, vehicleId)
@@ -13,7 +13,7 @@ export async function list(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { vehicleId } = req.params
 
   const parsed = createMaintenanceSchema.safeParse(req.body)
@@ -32,7 +32,7 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function remove(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { id } = req.params
 
   const ok = await service.deleteMaintenance(userId, id)

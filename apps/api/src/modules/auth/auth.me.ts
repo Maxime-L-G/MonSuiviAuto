@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { prisma } from "../../config/prisma"
 
 export async function me(req: Request, res: Response) {
-  const userId = (req as any).user?.id as string | undefined
+  const userId = req.user?.id
   if (!userId) return res.status(401).json({ error: "UNAUTHORIZED" })
 
   const user = await prisma.user.findUnique({

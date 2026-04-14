@@ -3,7 +3,7 @@ import { createVehicleSchema } from "./vehicle.schema"
 import * as service from "./vehicle.service"
 
 export async function create(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
 
   const parsed = createVehicleSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -15,13 +15,13 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function list(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const vehicles = await service.listVehicles(userId)
   return res.json({ vehicles })
 }
 
 export async function update(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { id } = req.params
 
   const parsed = createVehicleSchema.safeParse(req.body)
@@ -29,9 +29,9 @@ export async function update(req: Request, res: Response) {
     return res.status(400).json({ error: "VALIDATION_ERROR" })
   }
 
-  const result = await service.updateVehicle(id, userId, parsed.data)
+  const ok = await service.updateVehicle(id, userId, parsed.data)
 
-  if (result.count === 0) {
+  if (!ok) {
     return res.status(404).json({ error: "VEHICLE_NOT_FOUND" })
   }
 
@@ -39,12 +39,12 @@ export async function update(req: Request, res: Response) {
 }
 
 export async function remove(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { id } = req.params
 
-  const result = await service.deleteVehicle(id, userId)
+  const ok = await service.deleteVehicle(id, userId)
 
-  if (result.count === 0) {
+  if (!ok) {
     return res.status(404).json({ error: "VEHICLE_NOT_FOUND" })
   }
 
@@ -52,7 +52,7 @@ export async function remove(req: Request, res: Response) {
 }
 
 export async function getOne(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { id } = req.params
 
   const vehicle = await service.getVehicleById(id, userId)

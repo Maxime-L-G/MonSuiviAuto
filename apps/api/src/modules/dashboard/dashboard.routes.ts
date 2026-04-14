@@ -5,7 +5,7 @@ import { prisma } from "../../config/prisma"
 export const dashboardRouter = Router()
 
 dashboardRouter.get("/dashboard/summary", requireAuth, async (req, res) => {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
 
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
