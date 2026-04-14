@@ -1,26 +1,18 @@
-import { prisma } from "../../config/prisma"
+import { MaintenanceType } from "@prisma/client"
+import * as repo from "./maintenance.repository"
 
 export async function listMaintenances(userId: string, vehicleId: string) {
-  // ownership: vehicle must belong to user
-  const vehicle = await prisma.vehicle.findFirst({
-    where: { id: vehicleId, userId },
-    select: { id: true },
-  })
+  const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
   if (!vehicle) return null
 
-  const maintenances = await prisma.maintenance.findMany({
-    where: { vehicleId },
-    orderBy: [{ date: "desc" }, { createdAt: "desc" }],
-  })
-
-  return maintenances
+  return repo.dbListMaintenances(vehicleId)
 }
 
 export async function createMaintenance(
   userId: string,
   vehicleId: string,
   data: {
-    type?: any
+    type?: MaintenanceType
     title: string
     date: Date
     mileage: number
@@ -28,32 +20,23 @@ export async function createMaintenance(
     notes?: string
   }
 ) {
-  const vehicle = await prisma.vehicle.findFirst({
-    where: { id: vehicleId, userId },
-    select: { id: true },
-  })
+  const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
   if (!vehicle) return null
 
-  return prisma.maintenance.create({
-    data: {
-      vehicleId,
-      type: data.type ?? "OTHER",
-      title: data.title,
-      date: data.date,
-      mileage: data.mileage,
-      costCents: data.costCents ?? 0,
-      notes: data.notes,
-    },
+  return repo.dbCreateMaintenance(vehicleId, {
+    type: data.type ?? "OTHER",
+    title: data.title,
+    date: data.date,
+    mileage: data.mileage,
+    costCents: data.costCents ?? 0,
+    notes: data.notes,
   })
 }
 
 export async function deleteMaintenance(userId: string, id: string) {
-  const m = await prisma.maintenance.findFirst({
-    where: { id, vehicle: { userId } },
-    select: { id: true },
-  })
+  const m = await repo.dbFindMaintenance(id, userId)
   if (!m) return null
 
-  await prisma.maintenance.delete({ where: { id } })
+  await repo.dbDeleteMaintenance(id)
   return true
 }
