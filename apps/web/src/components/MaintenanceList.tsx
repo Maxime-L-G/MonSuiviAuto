@@ -2,33 +2,32 @@ import { useCallback, useEffect, useState } from "react"
 import { apiFetch } from "../lib/api"
 import { MaintenanceForm } from "./MaintenanceForm"
 
+type MaintenanceType = "OIL_CHANGE" | "TIRES" | "BRAKES" | "BATTERY" | "INSPECTION" | "REPAIR" | "OTHER"
+
 type Maintenance = {
   id: string
   title: string
-  type: string
+  type: MaintenanceType
   date: string
   mileage: number
   costCents: number
   notes?: string
 }
 
-function typeLabel(t: string) {
-  const map: Record<string, string> = {
-    OIL_CHANGE: "Vidange",
-    TIRES: "Pneus",
-    BRAKES: "Freins",
-    BATTERY: "Batterie",
-    INSPECTION: "CT",
-    REPAIR: "Réparation",
-    OTHER: "Autre",
-  }
-  return map[t] ?? t
+const TYPE_LABELS: Record<MaintenanceType, string> = {
+  OIL_CHANGE: "Vidange",
+  TIRES: "Pneus",
+  BRAKES: "Freins",
+  BATTERY: "Batterie",
+  INSPECTION: "Contrôle technique",
+  REPAIR: "Réparation",
+  OTHER: "Autre",
 }
-
 
 export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
   const [items, setItems] = useState<Maintenance[]>([])
-  const [open, setOpen] = useState(false)
+  const [formOpen, setFormOpen] = useState(false)
+  const [editing, setEditing] = useState<Maintenance | null>(null)
 
   const load = useCallback(async () => {
     const res = await apiFetch<{ maintenances: Maintenance[] }>(
@@ -46,14 +45,21 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
     await load()
   }
 
+  function openCreate() {
+    setEditing(null)
+    setFormOpen(true)
+  }
+
+  function openEdit(m: Maintenance) {
+    setEditing(m)
+    setFormOpen(true)
+  }
+
   return (
     <div className="rounded-2xl border border-border bg-surface p-5 space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Entretiens</h2>
-        <button
-          className="btn-primary"
-          onClick={() => setOpen(true)}
-        >
+        <button className="btn-primary" onClick={openCreate}>
           Ajouter
         </button>
       </div>
@@ -70,34 +76,41 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
           >
             <div>
               <div className="mb-1 inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-xs text-muted">
-                {typeLabel(m.type)}
+                {TYPE_LABELS[m.type] ?? m.type}
               </div>
               <div className="font-medium">{m.title}</div>
               <div className="text-sm text-muted">
-                {new Date(m.date).toLocaleDateString()} · {m.mileage} km
+                {new Date(m.date).toLocaleDateString()} · {m.mileage.toLocaleString()} km
               </div>
               {m.costCents > 0 && (
-                <div className="text-sm">
-                  {(m.costCents / 100).toFixed(2)} €
-                </div>
+                <div className="text-sm">{(m.costCents / 100).toFixed(2)} €</div>
               )}
             </div>
 
-            <button
-              className="text-sm text-danger hover:underline"
-              onClick={() => remove(m.id)}
-            >
-              Supprimer
-            </button>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                className="text-sm text-primary hover:underline"
+                onClick={() => openEdit(m)}
+              >
+                Modifier
+              </button>
+              <button
+                className="text-sm text-danger hover:underline"
+                onClick={() => remove(m.id)}
+              >
+                Supprimer
+              </button>
+            </div>
           </li>
         ))}
       </ul>
 
       <MaintenanceForm
-        open={open}
-        onClose={() => setOpen(false)}
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
         vehicleId={vehicleId}
         onCreated={load}
+        initial={editing ?? undefined}
       />
     </div>
   )

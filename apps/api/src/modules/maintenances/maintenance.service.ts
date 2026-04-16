@@ -33,6 +33,24 @@ export async function createMaintenance(
   })
 }
 
+export async function updateMaintenance(
+  userId: string,
+  id: string,
+  data: {
+    type?: MaintenanceType
+    title?: string
+    date?: Date
+    mileage?: number
+    costCents?: number
+    notes?: string | null
+  }
+) {
+  const m = await repo.dbFindMaintenance(id, userId)
+  if (!m) return null
+
+  return repo.dbUpdateMaintenance(id, data)
+}
+
 export async function deleteMaintenance(userId: string, id: string) {
   const m = await repo.dbFindMaintenance(id, userId)
   if (!m) return null

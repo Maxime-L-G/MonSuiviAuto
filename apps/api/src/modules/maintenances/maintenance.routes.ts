@@ -4,9 +4,8 @@ import * as controller from "./maintenance.controller"
 
 export const maintenanceRouter = Router()
 
-// nested under vehicle
 maintenanceRouter.get("/vehicles/:vehicleId/maintenances", requireAuth, controller.list)
 maintenanceRouter.post("/vehicles/:vehicleId/maintenances", requireAuth, controller.create)
 
-// direct maintenance id
+maintenanceRouter.patch("/maintenances/:id", requireAuth, controller.update)
 maintenanceRouter.delete("/maintenances/:id", requireAuth, controller.remove)
