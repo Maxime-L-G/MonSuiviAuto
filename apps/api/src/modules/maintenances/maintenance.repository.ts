@@ -36,6 +36,20 @@ export async function dbFindMaintenance(id: string, userId: string) {
   })
 }
 
+export async function dbUpdateMaintenance(
+  id: string,
+  data: {
+    type?: MaintenanceType
+    title?: string
+    date?: Date
+    mileage?: number
+    costCents?: number
+    notes?: string | null
+  }
+) {
+  return prisma.maintenance.update({ where: { id }, data })
+}
+
 export async function dbDeleteMaintenance(id: string) {
   return prisma.maintenance.delete({ where: { id } })
 }
