@@ -1,5 +1,21 @@
-import { MaintenanceType } from "@prisma/client"
+import { MaintenanceType, ReminderType } from "@prisma/client"
 import * as repo from "./maintenance.repository"
+import { dbCreateReminder } from "../reminders/reminder.repository"
+
+type AutoReminderRule = {
+  reminderType: ReminderType
+  title: string
+  daysInterval?: number
+  kmInterval?: number
+}
+
+const AUTO_REMINDER_RULES: Partial<Record<MaintenanceType, AutoReminderRule>> = {
+  OIL_CHANGE:  { reminderType: "OIL_CHANGE",  title: "Prochaine vidange",              daysInterval: 365,  kmInterval: 10000 },
+  INSPECTION:  { reminderType: "INSPECTION",   title: "Prochain contrôle technique",    daysInterval: 730 },
+  TIRES:       { reminderType: "CUSTOM",       title: "Remplacement des pneus",         daysInterval: 730,  kmInterval: 30000 },
+  BRAKES:      { reminderType: "CUSTOM",       title: "Vérification des freins",        daysInterval: 730,  kmInterval: 30000 },
+  BATTERY:     { reminderType: "CUSTOM",       title: "Remplacement de la batterie",    daysInterval: 1460 },
+}
 
 export async function listMaintenances(userId: string, vehicleId: string) {
   const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
@@ -23,7 +39,7 @@ export async function createMaintenance(
   const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
   if (!vehicle) return null
 
-  return repo.dbCreateMaintenance(vehicleId, {
+  const maintenance = await repo.dbCreateMaintenance(vehicleId, {
     type: data.type ?? "OTHER",
     title: data.title,
     date: data.date,
@@ -31,6 +47,23 @@ export async function createMaintenance(
     costCents: data.costCents ?? 0,
     notes: data.notes,
   })
+
+  const rule = AUTO_REMINDER_RULES[maintenance.type]
+  if (rule) {
+    const dueDate = rule.daysInterval
+      ? new Date(data.date.getTime() + rule.daysInterval * 24 * 60 * 60 * 1000)
+      : undefined
+    const dueMileage = rule.kmInterval ? data.mileage + rule.kmInterval : undefined
+
+    await dbCreateReminder(vehicleId, {
+      type: rule.reminderType,
+      title: rule.title,
+      dueDate,
+      dueMileage,
+    })
+  }
+
+  return maintenance
 }
 
 export async function updateMaintenance(
