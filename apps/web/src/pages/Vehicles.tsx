@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link } from "react-router-dom"
-import { apiFetch } from "../lib/api"
+import { apiFetch, getUser } from "../lib/api"
 import { createPortal } from "react-dom"
 
 type VehicleUsage = "PERSONAL" | "PROFESSIONAL"
@@ -60,6 +60,8 @@ function Modal({
 }
 
 export function Vehicles() {
+  const isPro = getUser()?.role === "PROFESSIONAL"
+
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -200,9 +202,11 @@ export function Vehicles() {
                   </div>
                   <div className="mt-1 flex items-center gap-2 text-sm text-muted">
                     <span>{v.currentKm.toLocaleString()} km</span>
-                    <span className="inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-xs">
-                      {USAGE_LABELS[v.usage]}
-                    </span>
+                    {isPro && (
+                      <span className="inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-xs">
+                        {USAGE_LABELS[v.usage]}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -274,17 +278,19 @@ export function Vehicles() {
             </div>
           </div>
 
-          <div>
-            <label className="text-sm font-medium">Usage</label>
-            <select
-              className="mt-1 input-field"
-              value={usage}
-              onChange={(e) => setUsage(e.target.value as VehicleUsage)}
-            >
-              <option value="PERSONAL">Personnel</option>
-              <option value="PROFESSIONAL">Professionnel</option>
-            </select>
-          </div>
+          {isPro && (
+            <div>
+              <label className="text-sm font-medium">Usage</label>
+              <select
+                className="mt-1 input-field"
+                value={usage}
+                onChange={(e) => setUsage(e.target.value as VehicleUsage)}
+              >
+                <option value="PERSONAL">Personnel</option>
+                <option value="PROFESSIONAL">Professionnel</option>
+              </select>
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-2">
             <button className="btn-secondary" onClick={() => setOpenForm(false)}>

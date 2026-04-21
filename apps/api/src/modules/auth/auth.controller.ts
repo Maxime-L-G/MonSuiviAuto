@@ -9,7 +9,7 @@ export async function register(req: Request, res: Response) {
   }
 
   try {
-    const user = await service.register(parsed.data.email, parsed.data.password)
+    const user = await service.register(parsed.data.email, parsed.data.password, parsed.data.role)
     return res.status(201).json({ user })
   } catch (e: unknown) {
     if (e instanceof Error && e.message === "EMAIL_ALREADY_USED") {

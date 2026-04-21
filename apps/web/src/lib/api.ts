@@ -1,5 +1,11 @@
 const API_URL = import.meta.env.VITE_API_URL as string
 
+type StoredUser = {
+  id: string
+  email: string
+  role: "USER" | "PROFESSIONAL" | "ADMIN"
+}
+
 export function getToken() {
   return localStorage.getItem("token")
 }
@@ -12,6 +18,24 @@ export function clearToken() {
   localStorage.removeItem("token")
 }
 
+export function getUser(): StoredUser | null {
+  const raw = localStorage.getItem("user")
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as StoredUser
+  } catch {
+    return null
+  }
+}
+
+export function setUser(user: StoredUser) {
+  localStorage.setItem("user", JSON.stringify(user))
+}
+
+export function clearUser() {
+  localStorage.removeItem("user")
+}
+
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getToken()
 
@@ -21,7 +45,7 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 
   const res = await fetch(`${API_URL}${path}`, { ...init, headers })
 
-    if (!res.ok) {
+  if (!res.ok) {
     const text = await res.text().catch(() => "")
     throw new Error(`${res.status} ${res.statusText} ${text}`)
   }
@@ -36,5 +60,4 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   }
 
   return res.json() as Promise<T>
-
 }

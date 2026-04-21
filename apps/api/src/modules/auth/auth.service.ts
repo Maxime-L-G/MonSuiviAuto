@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt"
 import jwt, { SignOptions, Secret } from "jsonwebtoken"
+import { Role } from "@prisma/client"
 import * as repo from "./auth.repository"
 
 function getJwtSecret(): Secret {
@@ -8,12 +9,12 @@ function getJwtSecret(): Secret {
   return secret as Secret
 }
 
-export async function register(email: string, password: string) {
+export async function register(email: string, password: string, role: Role = "USER") {
   const existing = await repo.dbFindUserByEmail(email)
   if (existing) throw new Error("EMAIL_ALREADY_USED")
 
   const passwordHash = await bcrypt.hash(password, 10)
-  return repo.dbCreateUser(email, passwordHash)
+  return repo.dbCreateUser(email, passwordHash, role)
 }
 
 export async function login(email: string, password: string) {
