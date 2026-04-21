@@ -10,8 +10,15 @@ export async function dbCreateVehicle(
 
 export async function dbListVehicles(userId: string) {
   return prisma.vehicle.findMany({
-    where: { userId },
+    where: { userId, archivedAt: null },
     orderBy: { createdAt: "desc" },
+  })
+}
+
+export async function dbArchiveVehicle(id: string, userId: string) {
+  return prisma.vehicle.updateMany({
+    where: { id, userId, archivedAt: null },
+    data: { archivedAt: new Date() },
   })
 }
 
