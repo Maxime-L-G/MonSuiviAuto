@@ -1,12 +1,13 @@
 import { prisma } from "../../config/prisma"
+import { Role } from "@prisma/client"
 
 export async function dbFindUserByEmail(email: string) {
   return prisma.user.findUnique({ where: { email } })
 }
 
-export async function dbCreateUser(email: string, passwordHash: string) {
+export async function dbCreateUser(email: string, passwordHash: string, role: Role = "USER") {
   return prisma.user.create({
-    data: { email, passwordHash },
+    data: { email, passwordHash, role },
     select: { id: true, email: true, role: true, createdAt: true },
   })
 }
