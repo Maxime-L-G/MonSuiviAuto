@@ -29,6 +29,17 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Maintenance | null>(null)
 
+  const [filterType, setFilterType] = useState<MaintenanceType | "ALL">("ALL")
+  const [filterYear, setFilterYear] = useState<number | "ALL">("ALL")
+
+  const years = [...new Set(items.map((m) => new Date(m.date).getFullYear()))].sort((a, b) => b - a)
+
+  const filteredItems = items.filter((m) => {
+    if (filterType !== "ALL" && m.type !== filterType) return false
+    if (filterYear !== "ALL" && new Date(m.date).getFullYear() !== filterYear) return false
+    return true
+  })
+
   const load = useCallback(async () => {
     const res = await apiFetch<{ maintenances: Maintenance[] }>(
       `/vehicles/${vehicleId}/maintenances`
@@ -64,12 +75,40 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
         </button>
       </div>
 
-      {items.length === 0 && (
-        <p className="text-sm text-muted">Aucun entretien enregistré.</p>
+      {items.length > 0 && (
+        <div className="flex gap-3">
+          <select
+            className="input-field"
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value as MaintenanceType | "ALL")}
+          >
+            <option value="ALL">Tous les types</option>
+            {(Object.keys(TYPE_LABELS) as MaintenanceType[]).map((t) => (
+              <option key={t} value={t}>{TYPE_LABELS[t]}</option>
+            ))}
+          </select>
+
+          <select
+            className="input-field"
+            value={filterYear}
+            onChange={(e) => setFilterYear(e.target.value === "ALL" ? "ALL" : Number(e.target.value))}
+          >
+            <option value="ALL">Toutes les années</option>
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {filteredItems.length === 0 && (
+        <p className="text-sm text-muted">
+          {items.length === 0 ? "Aucun entretien enregistré." : "Aucun entretien pour ces filtres."}
+        </p>
       )}
 
       <ul className="space-y-2">
-        {items.map((m) => (
+        {filteredItems.map((m) => (
           <li
             key={m.id}
             className="flex justify-between rounded-xl border border-border bg-white p-4"
