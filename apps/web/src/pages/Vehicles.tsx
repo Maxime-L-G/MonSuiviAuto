@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { apiFetch } from "../lib/api"
 import { createPortal } from "react-dom"
 
+type VehicleUsage = "PERSONAL" | "PROFESSIONAL"
 
 type Vehicle = {
   id: string
@@ -10,13 +11,12 @@ type Vehicle = {
   model: string
   year: number
   currentKm: number
+  usage: VehicleUsage
 }
 
-type VehicleInput = {
-  make: string
-  model: string
-  year: number
-  currentKm: number
+const USAGE_LABELS: Record<VehicleUsage, string> = {
+  PERSONAL: "Personnel",
+  PROFESSIONAL: "Professionnel",
 }
 
 function Card({ children }: { children: React.ReactNode }) {
@@ -47,10 +47,7 @@ function Modal({
       <div className="relative w-full max-w-lg rounded-2xl border border-border bg-surface2 shadow-xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="text-base font-semibold">{title}</div>
-          <button
-            className="rounded-xl px-3 py-1.5 text-sm text-muted hover:bg-slate-100"
-            onClick={onClose}
-          >
+          <button className="btn-secondary py-1.5 px-3 text-sm" onClick={onClose}>
             Fermer
           </button>
         </div>
@@ -61,9 +58,6 @@ function Modal({
     document.body
   )
 }
-
-
-
 
 export function Vehicles() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
@@ -83,6 +77,7 @@ export function Vehicles() {
   const [model, setModel] = useState("")
   const [year, setYear] = useState(currentYear)
   const [currentKm, setCurrentKm] = useState(0)
+  const [usage, setUsage] = useState<VehicleUsage>("PERSONAL")
 
   async function loadVehicles() {
     setLoading(true)
@@ -107,6 +102,7 @@ export function Vehicles() {
     setModel("")
     setYear(currentYear)
     setCurrentKm(0)
+    setUsage("PERSONAL")
   }
 
   function openCreate() {
@@ -121,6 +117,7 @@ export function Vehicles() {
     setModel(v.model)
     setYear(v.year)
     setCurrentKm(v.currentKm)
+    setUsage(v.usage)
     setFormError(null)
     setOpenForm(true)
   }
@@ -133,15 +130,10 @@ export function Vehicles() {
       return
     }
 
-    const payload: VehicleInput = {
-      make: make.trim(),
-      model: model.trim(),
-      year,
-      currentKm,
-    }
-
     setSaving(true)
     try {
+      const payload = { make: make.trim(), model: model.trim(), year, currentKm, usage }
+
       if (editing) {
         await apiFetch(`/vehicles/${editing.id}`, {
           method: "PATCH",
@@ -157,7 +149,7 @@ export function Vehicles() {
       setOpenForm(false)
       await loadVehicles()
     } catch {
-      setFormError("Erreur lors de l’enregistrement.")
+      setFormError("Erreur lors de l'enregistrement.")
     } finally {
       setSaving(false)
     }
@@ -165,13 +157,12 @@ export function Vehicles() {
 
   async function deleteVehicle() {
     if (!confirmDelete) return
-
     try {
       await apiFetch(`/vehicles/${confirmDelete.id}`, { method: "DELETE" })
       setConfirmDelete(null)
       await loadVehicles()
     } catch {
-      alert("Erreur lors de la suppression.")
+      setError("Erreur lors de la suppression.")
     }
   }
 
@@ -180,15 +171,9 @@ export function Vehicles() {
       <div className="flex items-center justify-between">
         <div>
           <div className="text-lg font-semibold">Véhicules</div>
-          <div className="text-sm text-muted">
-            Gestion de tes véhicules
-          </div>
+          <div className="text-sm text-muted">Gestion de tes véhicules</div>
         </div>
-
-        <button
-          className="btn-primary"
-          onClick={openCreate}
-        >
+        <button className="btn-primary" onClick={openCreate}>
           Ajouter
         </button>
       </div>
@@ -199,9 +184,7 @@ export function Vehicles() {
       {!loading && !error && (
         <div className="mt-4 grid gap-3">
           {vehicles.length === 0 ? (
-            <div className="text-sm text-muted">
-              Aucun véhicule pour le moment.
-            </div>
+            <div className="text-sm text-muted">Aucun véhicule pour le moment.</div>
           ) : (
             vehicles.map((v) => (
               <div
@@ -210,25 +193,21 @@ export function Vehicles() {
               >
                 <div>
                   <div className="font-medium">
-                    <Link
-                      to={`/app/vehicles/${v.id}`}
-                      className="hover:underline"
-                    >
+                    <Link to={`/app/vehicles/${v.id}`} className="hover:underline">
                       {v.make} {v.model}
                     </Link>{" "}
                     <span className="text-muted">({v.year})</span>
                   </div>
-
-                  <div className="text-sm text-muted">
-                    {v.currentKm.toLocaleString()} km
+                  <div className="mt-1 flex items-center gap-2 text-sm text-muted">
+                    <span>{v.currentKm.toLocaleString()} km</span>
+                    <span className="inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-xs">
+                      {USAGE_LABELS[v.usage]}
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
-                  <button
-                    className="btn-secondary py-1.5"
-                    onClick={() => openEdit(v)}
-                  >
+                  <button className="btn-secondary py-1.5" onClick={() => openEdit(v)}>
                     Modifier
                   </button>
                   <button
@@ -284,11 +263,8 @@ export function Vehicles() {
                 onChange={(e) => setYear(Number(e.target.value))}
               />
             </div>
-
             <div>
-              <label className="text-sm font-medium">
-                Kilométrage actuel
-              </label>
+              <label className="text-sm font-medium">Kilométrage actuel</label>
               <input
                 type="number"
                 className="mt-1 input-field"
@@ -298,18 +274,23 @@ export function Vehicles() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              className="btn-secondary"
-              onClick={() => setOpenForm(false)}
+          <div>
+            <label className="text-sm font-medium">Usage</label>
+            <select
+              className="mt-1 input-field"
+              value={usage}
+              onChange={(e) => setUsage(e.target.value as VehicleUsage)}
             >
+              <option value="PERSONAL">Personnel</option>
+              <option value="PROFESSIONAL">Professionnel</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button className="btn-secondary" onClick={() => setOpenForm(false)}>
               Annuler
             </button>
-            <button
-              className="btn-primary"
-              onClick={submitForm}
-              disabled={saving}
-            >
+            <button className="btn-primary" onClick={submitForm} disabled={saving}>
               {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>
@@ -323,23 +304,14 @@ export function Vehicles() {
       >
         <p className="text-sm text-muted">
           Es-tu sûr de vouloir supprimer{" "}
-          <strong>
-            {confirmDelete?.make} {confirmDelete?.model}
-          </strong>{" "}
-          ?
+          <strong>{confirmDelete?.make} {confirmDelete?.model}</strong> ?
         </p>
 
         <div className="mt-6 flex justify-end gap-2">
-          <button
-            className="btn-secondary"
-            onClick={() => setConfirmDelete(null)}
-          >
+          <button className="btn-secondary" onClick={() => setConfirmDelete(null)}>
             Annuler
           </button>
-          <button
-            className="btn-danger"
-            onClick={deleteVehicle}
-          >
+          <button className="btn-danger" onClick={deleteVehicle}>
             Supprimer
           </button>
         </div>
