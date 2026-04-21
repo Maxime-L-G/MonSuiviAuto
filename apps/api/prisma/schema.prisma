@@ -24,13 +24,19 @@ model User {
   updatedAt    DateTime  @updatedAt
 }
 
+enum VehicleUsage {
+  PERSONAL
+  PROFESSIONAL
+}
+
 model Vehicle {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   userId    String
   make      String
   model     String
   year      Int
   currentKm Int
+  usage     VehicleUsage @default(PERSONAL)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
