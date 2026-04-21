@@ -45,6 +45,12 @@ export async function remove(req: Request, res: Response) {
   return res.status(204).send()
 }
 
+export async function listArchived(req: Request, res: Response) {
+  const userId = req.user!.id
+  const vehicles = await service.listArchivedVehicles(userId)
+  return res.json({ vehicles })
+}
+
 export async function archive(req: Request, res: Response) {
   const userId = req.user!.id
   const { id } = req.params
