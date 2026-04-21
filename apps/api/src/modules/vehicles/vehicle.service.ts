@@ -29,3 +29,8 @@ export async function deleteVehicle(id: string, userId: string) {
   const result = await repo.dbDeleteVehicle(id, userId)
   return result.count > 0
 }
+
+export async function archiveVehicle(id: string, userId: string) {
+  const result = await repo.dbArchiveVehicle(id, userId)
+  return result.count > 0
+}

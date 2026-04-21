@@ -37,7 +37,8 @@ model Vehicle {
   model     String
   year      Int
   currentKm Int
-  usage     VehicleUsage @default(PERSONAL)
+  usage      VehicleUsage @default(PERSONAL)
+  archivedAt DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
