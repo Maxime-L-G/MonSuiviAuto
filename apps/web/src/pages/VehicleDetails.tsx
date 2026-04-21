@@ -4,12 +4,20 @@ import { apiFetch } from "../lib/api"
 import { MaintenanceList } from "../components/MaintenanceList"
 import { ReminderList } from "../components/ReminderList"
 
+type VehicleUsage = "PERSONAL" | "PROFESSIONAL"
+
 type Vehicle = {
   id: string
   make: string
   model: string
   year: number
   currentKm: number
+  usage: VehicleUsage
+}
+
+const USAGE_LABELS: Record<VehicleUsage, string> = {
+  PERSONAL: "Personnel",
+  PROFESSIONAL: "Professionnel",
 }
 
 export function VehicleDetails() {
@@ -22,7 +30,7 @@ export function VehicleDetails() {
       .then((res) => setVehicle(res.vehicle))
   }, [id])
 
-  if (!vehicle) return <div>Chargement…</div>
+  if (!vehicle) return <div className="text-sm text-muted">Chargement…</div>
 
   return (
     <div className="space-y-6">
@@ -34,9 +42,15 @@ export function VehicleDetails() {
         <h1 className="text-xl font-semibold">
           {vehicle.make} {vehicle.model}
         </h1>
-        <p className="text-sm text-muted">
-          {vehicle.year} · {vehicle.currentKm.toLocaleString()} km
-        </p>
+        <div className="mt-1 flex items-center gap-2 text-sm text-muted">
+          <span>{vehicle.year}</span>
+          <span>·</span>
+          <span>{vehicle.currentKm.toLocaleString()} km</span>
+          <span>·</span>
+          <span className="inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-xs">
+            {USAGE_LABELS[vehicle.usage]}
+          </span>
+        </div>
       </div>
 
       <MaintenanceList vehicleId={vehicle.id} />
