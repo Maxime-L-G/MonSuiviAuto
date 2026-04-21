@@ -5,6 +5,7 @@ import { Login } from "./pages/Login"
 import { Register } from "./pages/Register"
 import { Dashboard } from "./pages/Dashboard"
 import { Vehicles } from "./pages/Vehicles"
+import { ArchivedVehicles } from "./pages/ArchivedVehicles"
 import { VehicleDetails } from "./pages/VehicleDetails"
 
 export const router = createBrowserRouter([
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Dashboard /> },
           { path: "vehicles", element: <Vehicles /> },
+          { path: "vehicles/archived", element: <ArchivedVehicles /> },
           { path: "vehicles/:id", element: <VehicleDetails /> }
         ],
       },

@@ -30,11 +30,21 @@ export function AppLayout() {
 
             <NavLink
               to="/app/vehicles"
+              end
               className={({ isActive }) =>
                 `${navBase} ${isActive ? navActive : "text-slate-200"}`
               }
             >
               Véhicules
+            </NavLink>
+
+            <NavLink
+              to="/app/vehicles/archived"
+              className={({ isActive }) =>
+                `${navBase} ${isActive ? navActive : "text-slate-200"}`
+              }
+            >
+              Véhicules archivés
             </NavLink>
           </nav>
         </aside>
