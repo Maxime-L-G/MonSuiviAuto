@@ -54,7 +54,7 @@ export function VehicleDetails() {
       </div>
 
       <MaintenanceList vehicleId={vehicle.id} />
-      <ReminderList vehicleId={vehicle.id} />
+      <ReminderList vehicleId={vehicle.id} currentKm={vehicle.currentKm} />
     </div>
   )
 }
