@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import { clearToken } from "../lib/api"
+import { clearToken, clearUser } from "../lib/api"
 
 const navBase =
   "flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-white/10"
@@ -52,6 +52,7 @@ export function AppLayout() {
               className="btn-primary"
               onClick={() => {
                 clearToken()
+                clearUser()
                 nav("/", { replace: true })
               }}
             >
