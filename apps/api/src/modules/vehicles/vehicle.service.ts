@@ -30,6 +30,10 @@ export async function deleteVehicle(id: string, userId: string) {
   return result.count > 0
 }
 
+export async function listArchivedVehicles(userId: string) {
+  return repo.dbListArchivedVehicles(userId)
+}
+
 export async function archiveVehicle(id: string, userId: string) {
   const result = await repo.dbArchiveVehicle(id, userId)
   return result.count > 0
