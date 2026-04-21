@@ -69,6 +69,7 @@ export function Vehicles() {
   const [openForm, setOpenForm] = useState(false)
   const [editing, setEditing] = useState<Vehicle | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<Vehicle | null>(null)
+  const [confirmArchive, setConfirmArchive] = useState<Vehicle | null>(null)
 
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -168,6 +169,17 @@ export function Vehicles() {
     }
   }
 
+  async function archiveVehicle() {
+    if (!confirmArchive) return
+    try {
+      await apiFetch(`/vehicles/${confirmArchive.id}/archive`, { method: "PATCH" })
+      setConfirmArchive(null)
+      await loadVehicles()
+    } catch {
+      setError("Erreur lors de l'archivage.")
+    }
+  }
+
   return (
     <Card>
       <div className="flex items-center justify-between">
@@ -213,6 +225,12 @@ export function Vehicles() {
                 <div className="flex gap-2">
                   <button className="btn-secondary py-1.5" onClick={() => openEdit(v)}>
                     Modifier
+                  </button>
+                  <button
+                    className="btn-secondary py-1.5 text-amber-600 hover:bg-amber-50"
+                    onClick={() => setConfirmArchive(v)}
+                  >
+                    Archiver
                   </button>
                   <button
                     className="btn-secondary py-1.5 text-danger hover:bg-red-50"
@@ -300,6 +318,25 @@ export function Vehicles() {
               {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Archiver le véhicule"
+        open={!!confirmArchive}
+        onClose={() => setConfirmArchive(null)}
+      >
+        <p className="text-sm text-muted">
+          Es-tu sûr de vouloir archiver{" "}
+          <strong>{confirmArchive?.make} {confirmArchive?.model}</strong> ? Il n'apparaîtra plus dans ta liste.
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <button className="btn-secondary" onClick={() => setConfirmArchive(null)}>
+            Annuler
+          </button>
+          <button className="btn-primary" onClick={archiveVehicle}>
+            Archiver
+          </button>
         </div>
       </Modal>
 
