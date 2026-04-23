@@ -2,6 +2,7 @@ import "dotenv/config"
 import express from "express"
 import cors from "cors"
 import helmet from "helmet"
+import { connectMongo } from "./config/mongo"
 import { authRouter } from "./modules/auth/auth.routes"
 import { vehicleRouter } from "./modules/vehicles/vehicle.route"
 import { maintenanceRouter } from "./modules/maintenances/maintenance.routes"
@@ -9,6 +10,8 @@ import { dashboardRouter } from "./modules/dashboard/dashboard.routes"
 import { reminderRouter } from "./modules/reminders/reminder.routes"
 
 const app = express()
+
+void connectMongo()
 
 app.use(cors())
 app.use(helmet())
