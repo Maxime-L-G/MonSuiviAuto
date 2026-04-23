@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import { clearToken, clearUser } from "../lib/api"
+import { clearToken, clearUser, getUser } from "../lib/api"
 
 const navBase =
   "flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-white/10"
@@ -7,6 +7,7 @@ const navActive = "bg-white/10 text-white ring-1 ring-white/10"
 
 export function AppLayout() {
   const nav = useNavigate()
+  const isAdmin = getUser()?.role === "ADMIN"
 
   return (
     <div className="h-full bg-[radial-gradient(ellipse_at_top,rgba(37,99,235,0.14),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(2,132,199,0.10),transparent_55%)]">
@@ -46,6 +47,17 @@ export function AppLayout() {
             >
               Véhicules archivés
             </NavLink>
+
+            {isAdmin && (
+              <NavLink
+                to="/app/admin"
+                className={({ isActive }) =>
+                  `${navBase} ${isActive ? navActive : "text-slate-200"}`
+                }
+              >
+                Administration
+              </NavLink>
+            )}
           </nav>
         </aside>
 
