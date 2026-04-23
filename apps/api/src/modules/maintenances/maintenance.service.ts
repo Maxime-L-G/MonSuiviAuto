@@ -1,6 +1,7 @@
 import { MaintenanceType, ReminderType } from "@prisma/client"
 import * as repo from "./maintenance.repository"
 import { dbCreateReminder } from "../reminders/reminder.repository"
+import { logAudit } from "../audit/audit.service"
 
 type AutoReminderRule = {
   reminderType: ReminderType
@@ -63,6 +64,7 @@ export async function createMaintenance(
     })
   }
 
+  await logAudit(userId, "CREATE", "MAINTENANCE", maintenance.id)
   return maintenance
 }
 
@@ -81,7 +83,9 @@ export async function updateMaintenance(
   const m = await repo.dbFindMaintenance(id, userId)
   if (!m) return null
 
-  return repo.dbUpdateMaintenance(id, data)
+  const updated = await repo.dbUpdateMaintenance(id, data)
+  await logAudit(userId, "UPDATE", "MAINTENANCE", id)
+  return updated
 }
 
 export async function deleteMaintenance(userId: string, id: string) {
@@ -89,5 +93,6 @@ export async function deleteMaintenance(userId: string, id: string) {
   if (!m) return null
 
   await repo.dbDeleteMaintenance(id)
+  await logAudit(userId, "DELETE", "MAINTENANCE", id)
   return true
 }

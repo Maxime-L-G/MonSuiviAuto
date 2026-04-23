@@ -1,5 +1,6 @@
 import { ReminderType, ReminderStatus } from "@prisma/client"
 import * as repo from "./reminder.repository"
+import { logAudit } from "../audit/audit.service"
 
 export async function listVehicleReminders(userId: string, vehicleId: string) {
   const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
@@ -22,13 +23,15 @@ export async function createVehicleReminder(
   const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
   if (!vehicle) return null
 
-  return repo.dbCreateReminder(vehicleId, {
+  const reminder = await repo.dbCreateReminder(vehicleId, {
     type: data.type ?? "CUSTOM",
     title: data.title,
     dueDate: data.dueDate,
     dueMileage: data.dueMileage,
     notes: data.notes,
   })
+  await logAudit(userId, "CREATE", "REMINDER", reminder.id)
+  return reminder
 }
 
 export async function updateReminder(
@@ -45,7 +48,9 @@ export async function updateReminder(
   const r = await repo.dbFindReminder(id, userId)
   if (!r) return null
 
-  return repo.dbUpdateReminder(id, data)
+  const updated = await repo.dbUpdateReminder(id, data)
+  await logAudit(userId, "UPDATE", "REMINDER", id)
+  return updated
 }
 
 export async function deleteReminder(userId: string, id: string) {
@@ -53,6 +58,7 @@ export async function deleteReminder(userId: string, id: string) {
   if (!r) return null
 
   await repo.dbDeleteReminder(id)
+  await logAudit(userId, "DELETE", "REMINDER", id)
   return true
 }
 
