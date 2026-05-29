@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom"
 import { apiFetch } from "../lib/api"
 import { MaintenanceList } from "../components/MaintenanceList"
 import { ReminderList } from "../components/ReminderList"
+import { VehicleStats } from "../components/VehicleStats"
 
 type VehicleUsage = "PERSONAL" | "PROFESSIONAL"
 
@@ -53,6 +54,7 @@ export function VehicleDetails() {
         </div>
       </div>
 
+      <VehicleStats vehicleId={vehicle.id} />
       <MaintenanceList vehicleId={vehicle.id} />
       <ReminderList vehicleId={vehicle.id} currentKm={vehicle.currentKm} />
     </div>
