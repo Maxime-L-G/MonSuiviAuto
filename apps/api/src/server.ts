@@ -2,6 +2,7 @@ import "dotenv/config"
 import express from "express"
 import cors from "cors"
 import helmet from "helmet"
+import rateLimit from "express-rate-limit"
 import { connectMongo } from "./config/mongo"
 import { authRouter } from "./modules/auth/auth.routes"
 import { vehicleRouter } from "./modules/vehicles/vehicle.route"
@@ -14,13 +15,19 @@ const app = express()
 
 void connectMongo()
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: "TOO_MANY_REQUESTS" },
+})
+
 app.use(cors())
 app.use(helmet())
 app.use(express.json())
 
 app.get("/health", (_, res) => res.json({ status: "OK", app: "MonSuiviAuto API" }))
 
-app.use("/auth", authRouter)
+app.use("/auth", authLimiter, authRouter)
 
 app.use("/vehicles", vehicleRouter)
 app.use(maintenanceRouter)
