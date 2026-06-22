@@ -1,7 +1,7 @@
 import { AuditLog } from "./audit.model"
 
 type Action = "CREATE" | "UPDATE" | "DELETE"
-type Entity = "VEHICLE" | "MAINTENANCE" | "REMINDER"
+type Entity = "VEHICLE" | "MAINTENANCE" | "REMINDER" | "DOCUMENT"
 
 export async function logAudit(
   userId: string,
