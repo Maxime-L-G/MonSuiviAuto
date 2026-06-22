@@ -47,8 +47,23 @@ model Vehicle {
 
   maintenances Maintenance[]
   reminders    Reminder[]
+  documents    Document[]
 
   @@index([userId])
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  vehicleId    String
+  filename     String
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([vehicleId])
 }
 
 enum MaintenanceType {

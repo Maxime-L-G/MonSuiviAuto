@@ -10,6 +10,7 @@ import { maintenanceRouter } from "./modules/maintenances/maintenance.routes"
 import { dashboardRouter } from "./modules/dashboard/dashboard.routes"
 import { reminderRouter } from "./modules/reminders/reminder.routes"
 import { adminRouter } from "./modules/admin/admin.routes"
+import { documentRouter } from "./modules/documents/document.routes"
 
 const app = express()
 
@@ -34,6 +35,7 @@ app.use(maintenanceRouter)
 app.use(dashboardRouter)
 app.use(reminderRouter)
 app.use("/admin", adminRouter)
+app.use(documentRouter)
 
 const PORT = process.env.PORT || 4000
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`))
