@@ -18,3 +18,14 @@ export async function dbFindUserById(id: string) {
     select: { id: true, email: true, role: true, createdAt: true },
   })
 }
+
+export async function dbListDocumentFilenames(userId: string) {
+  return prisma.document.findMany({
+    where: { vehicle: { userId } },
+    select: { filename: true },
+  })
+}
+
+export async function dbDeleteUser(id: string) {
+  return prisma.user.delete({ where: { id } })
+}
