@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { createPortal } from "react-dom"
-import { apiFetch, clearToken, clearUser, getUser } from "../lib/api"
+import { apiFetch, clearToken, clearUser, getToken, getUser } from "../lib/api"
+
+const API_URL = import.meta.env.VITE_API_URL as string
 
 const navBase =
   "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition hover:bg-white/10"
@@ -56,6 +58,20 @@ export function AppLayout() {
   const user = getUser()
   const isAdmin = user?.role === "ADMIN"
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  async function handleExportData() {
+    const token = getToken()
+    const res = await fetch(`${API_URL}/auth/me/export`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "mes-donnees-monsuiviauto.json"
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   async function handleDeleteAccount() {
     await apiFetch("/auth/me", { method: "DELETE" })
@@ -130,12 +146,20 @@ export function AppLayout() {
               </button>
             </div>
 
-            <button
-              onClick={() => setConfirmDelete(true)}
-              className="text-xs text-slate-500 hover:text-red-400 transition"
-            >
-              Supprimer mon compte
-            </button>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleExportData}
+                className="text-xs text-slate-500 hover:text-white transition"
+              >
+                Exporter mes données
+              </button>
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="text-xs text-slate-500 hover:text-red-400 transition"
+              >
+                Supprimer mon compte
+              </button>
+            </div>
           </div>
         </aside>
 
