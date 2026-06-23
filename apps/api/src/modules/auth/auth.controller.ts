@@ -45,3 +45,9 @@ export async function getMe(req: Request, res: Response) {
 
   return res.json({ user })
 }
+
+export async function deleteAccount(req: Request, res: Response) {
+  const userId = req.user!.id
+  await service.deleteAccount(userId)
+  return res.status(204).send()
+}

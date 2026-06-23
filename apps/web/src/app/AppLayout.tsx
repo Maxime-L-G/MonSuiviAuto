@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import { clearToken, clearUser, getUser } from "../lib/api"
+import { createPortal } from "react-dom"
+import { apiFetch, clearToken, clearUser, getUser } from "../lib/api"
 
 const navBase =
   "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition hover:bg-white/10"
@@ -30,10 +32,37 @@ function Icon({ d }: { d: string }) {
   )
 }
 
+function DeleteAccountModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: () => void }) {
+  return createPortal(
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-6">
+      <div className="absolute inset-0 bg-slate-950/50" onClick={onClose} />
+      <div className="relative w-full max-w-md rounded-2xl border border-border bg-surface2 shadow-xl p-5">
+        <div className="text-base font-semibold">Supprimer mon compte</div>
+        <p className="mt-2 text-sm text-muted">
+          Cette action est définitive. Tous tes véhicules, entretiens, rappels et documents seront supprimés. Cette action est irréversible.
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <button className="btn-secondary" onClick={onClose}>Annuler</button>
+          <button className="btn-danger" onClick={onConfirm}>Supprimer définitivement</button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
 export function AppLayout() {
   const nav = useNavigate()
   const user = getUser()
   const isAdmin = user?.role === "ADMIN"
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
+  async function handleDeleteAccount() {
+    await apiFetch("/auth/me", { method: "DELETE" })
+    clearToken()
+    clearUser()
+    nav("/", { replace: true })
+  }
 
   return (
     <div className="h-full bg-[radial-gradient(ellipse_at_top,rgba(37,99,235,0.14),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(2,132,199,0.10),transparent_55%)]">
@@ -83,8 +112,8 @@ export function AppLayout() {
             )}
           </nav>
 
-          {/* User + déconnexion */}
-          <div className="px-4 py-4 border-t border-white/5">
+          {/* User + déconnexion + suppression */}
+          <div className="px-4 py-4 border-t border-white/5 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <div className="text-sm font-medium truncate">{user?.email}</div>
@@ -100,6 +129,13 @@ export function AppLayout() {
                 </svg>
               </button>
             </div>
+
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="text-xs text-slate-500 hover:text-red-400 transition"
+            >
+              Supprimer mon compte
+            </button>
           </div>
         </aside>
 
@@ -107,6 +143,13 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+
+      {confirmDelete && (
+        <DeleteAccountModal
+          onClose={() => setConfirmDelete(false)}
+          onConfirm={handleDeleteAccount}
+        />
+      )}
     </div>
   )
 }

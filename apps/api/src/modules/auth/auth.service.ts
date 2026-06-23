@@ -1,7 +1,10 @@
 import bcrypt from "bcrypt"
 import jwt, { SignOptions, Secret } from "jsonwebtoken"
 import { Role } from "@prisma/client"
+import fs from "fs/promises"
+import path from "path"
 import * as repo from "./auth.repository"
+import { UPLOAD_DIR } from "../../config/upload"
 
 function getJwtSecret(): Secret {
   const secret = process.env.JWT_SECRET
@@ -38,4 +41,16 @@ export async function login(email: string, password: string) {
 
 export async function getMe(id: string) {
   return repo.dbFindUserById(id)
+}
+
+export async function deleteAccount(userId: string) {
+  const documents = await repo.dbListDocumentFilenames(userId)
+
+  await Promise.all(
+    documents.map((doc) =>
+      fs.unlink(path.join(UPLOAD_DIR, doc.filename)).catch(() => {})
+    )
+  )
+
+  await repo.dbDeleteUser(userId)
 }
