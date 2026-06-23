@@ -46,6 +46,15 @@ export async function getMe(req: Request, res: Response) {
   return res.json({ user })
 }
 
+export async function exportData(req: Request, res: Response) {
+  const userId = req.user!.id
+  const data = await service.exportUserData(userId)
+  if (!data) return res.status(404).json({ error: "USER_NOT_FOUND" })
+
+  res.setHeader("Content-Disposition", "attachment; filename=mes-donnees-monsuiviauto.json")
+  return res.json(data)
+}
+
 export async function deleteAccount(req: Request, res: Response) {
   const userId = req.user!.id
   await service.deleteAccount(userId)

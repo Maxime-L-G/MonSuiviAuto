@@ -19,6 +19,60 @@ export async function dbFindUserById(id: string) {
   })
 }
 
+export async function dbExportUserData(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      vehicles: {
+        select: {
+          id: true,
+          make: true,
+          model: true,
+          year: true,
+          currentKm: true,
+          usage: true,
+          archivedAt: true,
+          createdAt: true,
+          maintenances: {
+            select: {
+              type: true,
+              title: true,
+              date: true,
+              mileage: true,
+              costCents: true,
+              notes: true,
+              createdAt: true,
+            },
+          },
+          reminders: {
+            select: {
+              type: true,
+              title: true,
+              status: true,
+              dueDate: true,
+              dueMileage: true,
+              notes: true,
+              createdAt: true,
+            },
+          },
+          documents: {
+            select: {
+              originalName: true,
+              mimeType: true,
+              sizeBytes: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+    },
+  })
+}
+
 export async function dbListDocumentFilenames(userId: string) {
   return prisma.document.findMany({
     where: { vehicle: { userId } },
