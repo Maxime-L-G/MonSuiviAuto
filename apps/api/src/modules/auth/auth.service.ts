@@ -43,6 +43,10 @@ export async function getMe(id: string) {
   return repo.dbFindUserById(id)
 }
 
+export async function exportUserData(userId: string) {
+  return repo.dbExportUserData(userId)
+}
+
 export async function deleteAccount(userId: string) {
   const documents = await repo.dbListDocumentFilenames(userId)
 
