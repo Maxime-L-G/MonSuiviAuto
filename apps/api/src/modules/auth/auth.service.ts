@@ -1,49 +1,56 @@
 import bcrypt from "bcrypt"
 import jwt, { SignOptions, Secret } from "jsonwebtoken"
-import { prisma } from "../../config/prisma"
+import { Role } from "@prisma/client"
+import * as repo from "./auth.repository"
+import { cloudinary } from "../../config/cloudinary"
 
-
-function getJwtSecret() {
+function getJwtSecret(): Secret {
   const secret = process.env.JWT_SECRET
   if (!secret) throw new Error("JWT_SECRET is missing")
-  return secret
+  return secret as Secret
 }
 
-export async function register(email: string, password: string) {
-  const existing = await prisma.user.findUnique({ where: { email } })
+export async function register(email: string, password: string, role: Role = "USER") {
+  const existing = await repo.dbFindUserByEmail(email)
   if (existing) throw new Error("EMAIL_ALREADY_USED")
 
   const passwordHash = await bcrypt.hash(password, 10)
-
-  const user = await prisma.user.create({
-    data: { email, passwordHash },
-    select: { id: true, email: true, role: true, createdAt: true },
-  })
-
-  return user
+  return repo.dbCreateUser(email, passwordHash, role)
 }
 
 export async function login(email: string, password: string) {
-  const user = await prisma.user.findUnique({ where: { email } })
+  const user = await repo.dbFindUserByEmail(email)
   if (!user) throw new Error("INVALID_CREDENTIALS")
 
   const ok = await bcrypt.compare(password, user.passwordHash)
   if (!ok) throw new Error("INVALID_CREDENTIALS")
 
-  const secret: Secret = getJwtSecret() as Secret
-
   const options: SignOptions = {
     expiresIn: (process.env.JWT_EXPIRES_IN ?? "1h") as SignOptions["expiresIn"],
   }
 
-  const token = jwt.sign(
-    { sub: user.id, role: user.role },
-    secret,
-    options
-  )
+  const token = jwt.sign({ sub: user.id, role: user.role }, getJwtSecret(), options)
 
   return {
     token,
     user: { id: user.id, email: user.email, role: user.role },
   }
+}
+
+export async function getMe(id: string) {
+  return repo.dbFindUserById(id)
+}
+
+export async function exportUserData(userId: string) {
+  return repo.dbExportUserData(userId)
+}
+
+export async function deleteAccount(userId: string) {
+  const documents = await repo.dbListDocumentFilenames(userId)
+
+  await Promise.all(
+    documents.map((doc) => cloudinary.uploader.destroy(doc.filename).catch(() => {}))
+  )
+
+  await repo.dbDeleteUser(userId)
 }

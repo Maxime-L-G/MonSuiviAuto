@@ -12,6 +12,45 @@ type Reminder = {
   notes?: string | null
 }
 
+type SmartStatus = "DONE" | "LATE" | "SOON" | "OK" | "OPEN"
+
+function getSmartStatus(r: Reminder, currentKm: number): SmartStatus {
+  if (r.status === "DONE") return "DONE"
+
+  if (r.dueDate) {
+    const now = new Date()
+    const due = new Date(r.dueDate)
+    if (due < now) return "LATE"
+    const daysLeft = (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    if (daysLeft <= 30) return "SOON"
+    return "OK"
+  }
+
+  if (r.dueMileage != null) {
+    if (r.dueMileage <= currentKm) return "LATE"
+    if (r.dueMileage - currentKm <= 1000) return "SOON"
+    return "OK"
+  }
+
+  return "OPEN"
+}
+
+const SMART_STATUS_LABEL: Record<SmartStatus, string> = {
+  DONE: "Terminé",
+  LATE: "En retard",
+  SOON: "Bientôt dû",
+  OK: "OK",
+  OPEN: "À faire",
+}
+
+const SMART_STATUS_CLASS: Record<SmartStatus, string> = {
+  DONE: "bg-green-50 text-green-700 border-green-200",
+  LATE: "bg-red-50 text-red-700 border-red-200",
+  SOON: "bg-amber-50 text-amber-700 border-amber-200",
+  OK: "bg-blue-50 text-blue-700 border-blue-200",
+  OPEN: "bg-slate-50 text-slate-600 border-slate-200",
+}
+
 function typeLabel(t: Reminder["type"]) {
   const map: Record<Reminder["type"], string> = {
     INSPECTION: "Contrôle technique",
@@ -22,13 +61,7 @@ function typeLabel(t: Reminder["type"]) {
   return map[t]
 }
 
-function statusBadge(status: Reminder["status"]) {
-  return status === "DONE"
-    ? "bg-green-50 text-green-700 border-green-200"
-    : "bg-amber-50 text-amber-700 border-amber-200"
-}
-
-export function ReminderList({ vehicleId }: { vehicleId: string }) {
+export function ReminderList({ vehicleId, currentKm }: { vehicleId: string; currentKm: number }) {
   const [items, setItems] = useState<Reminder[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -71,7 +104,7 @@ export function ReminderList({ vehicleId }: { vehicleId: string }) {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Rappels</h2>
         <button
-          className="rounded-xl bg-primary px-4 py-2 text-sm text-white"
+          className="btn-primary"
           onClick={() => setOpen(true)}
         >
           Ajouter
@@ -98,11 +131,9 @@ export function ReminderList({ vehicleId }: { vehicleId: string }) {
                     {typeLabel(r.type)}
                   </span>
                   <span
-                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs ${statusBadge(
-                      r.status
-                    )}`}
+                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs ${SMART_STATUS_CLASS[getSmartStatus(r, currentKm)]}`}
                   >
-                    {r.status === "DONE" ? "Terminé" : "À faire"}
+                    {SMART_STATUS_LABEL[getSmartStatus(r, currentKm)]}
                   </span>
                 </div>
 

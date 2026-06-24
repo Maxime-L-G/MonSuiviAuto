@@ -3,7 +3,7 @@ import { createReminderSchema, updateReminderSchema } from "./reminder.schema"
 import * as service from "./reminder.service"
 
 export async function listForVehicle(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { vehicleId } = req.params
 
   const reminders = await service.listVehicleReminders(userId, vehicleId)
@@ -13,7 +13,7 @@ export async function listForVehicle(req: Request, res: Response) {
 }
 
 export async function createForVehicle(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { vehicleId } = req.params
 
   const parsed = createReminderSchema.safeParse(req.body)
@@ -31,7 +31,7 @@ export async function createForVehicle(req: Request, res: Response) {
 }
 
 export async function updateOne(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { id } = req.params
 
   const parsed = updateReminderSchema.safeParse(req.body)
@@ -48,7 +48,7 @@ export async function updateOne(req: Request, res: Response) {
 }
 
 export async function remove(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const { id } = req.params
 
   const ok = await service.deleteReminder(userId, id)
@@ -58,7 +58,7 @@ export async function remove(req: Request, res: Response) {
 }
 
 export async function upcoming(req: Request, res: Response) {
-  const userId = (req as any).user.id as string
+  const userId = req.user!.id
   const reminders = await service.listUpcomingReminders(userId)
   return res.json({ reminders })
 }

@@ -1,16 +1,16 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { apiFetch, setToken } from "../lib/api"
+import { Link, useNavigate } from "react-router-dom"
+import { apiFetch, setToken, setUser } from "../lib/api"
 
 type LoginResponse = {
   token: string
-  user: { id: string; email: string; role: string }
+  user: { id: string; email: string; role: "USER" | "PROFESSIONAL" | "ADMIN" }
 }
 
 export function Login() {
   const nav = useNavigate()
-  const [email, setEmail] = useState("test@test.com")
-  const [password, setPassword] = useState("password123")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -23,6 +23,7 @@ export function Login() {
         body: JSON.stringify({ email, password }),
       })
       setToken(data.token)
+      setUser(data.user)
       nav("/app", { replace: true })
     } catch {
       setError("Email ou mot de passe incorrect.")
@@ -47,7 +48,7 @@ export function Login() {
 
         <label className="text-sm font-medium">Email</label>
         <input
-          className="mt-1 mb-4 w-full rounded-xl border border-border bg-white/90 px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+          className="mt-1 mb-4 input-field"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -55,18 +56,27 @@ export function Login() {
         <label className="text-sm font-medium">Mot de passe</label>
         <input
           type="password"
-          className="mt-1 mb-6 w-full rounded-xl border border-border bg-white/90 px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30"
+          className="mt-1 mb-6 input-field"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button
-          className="w-full rounded-xl bg-primary px-3 py-2 text-white font-medium shadow-sm hover:opacity-95 disabled:opacity-60"
-          onClick={onSubmit}
-          disabled={loading}
-        >
+        <button className="w-full btn-primary py-2" onClick={onSubmit} disabled={loading}>
           {loading ? "Connexion..." : "Se connecter"}
         </button>
+
+        <p className="mt-4 text-center text-sm text-muted">
+          Pas encore de compte ?{" "}
+          <Link to="/register" className="text-primary hover:underline font-medium">
+            S'inscrire
+          </Link>
+        </p>
+
+        <p className="mt-2 text-center text-xs text-muted">
+          <Link to="/legal" className="hover:underline">
+            Mentions légales & confidentialité
+          </Link>
+        </p>
       </div>
     </div>
   )

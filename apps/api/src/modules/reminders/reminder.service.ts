@@ -1,97 +1,71 @@
-import { prisma } from "../../config/prisma"
-
-async function ensureVehicleOwned(userId: string, vehicleId: string) {
-  const v = await prisma.vehicle.findFirst({
-    where: { id: vehicleId, userId },
-    select: { id: true },
-  })
-  return !!v
-}
+import { ReminderType, ReminderStatus } from "@prisma/client"
+import * as repo from "./reminder.repository"
+import { logAudit } from "../audit/audit.service"
 
 export async function listVehicleReminders(userId: string, vehicleId: string) {
-  const ok = await ensureVehicleOwned(userId, vehicleId)
-  if (!ok) return null
+  const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
+  if (!vehicle) return null
 
-  return prisma.reminder.findMany({
-    where: { vehicleId },
-    orderBy: [{ status: "asc" }, { dueDate: "asc" }, { dueMileage: "asc" }, { createdAt: "desc" }],
-  })
+  return repo.dbListReminders(vehicleId)
 }
 
 export async function createVehicleReminder(
   userId: string,
   vehicleId: string,
   data: {
-    type?: "INSPECTION" | "INSURANCE" | "OIL_CHANGE" | "CUSTOM"
+    type?: ReminderType
     title: string
     dueDate?: Date
     dueMileage?: number
     notes?: string
   }
 ) {
-  const ok = await ensureVehicleOwned(userId, vehicleId)
-  if (!ok) return null
+  const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
+  if (!vehicle) return null
 
-  return prisma.reminder.create({
-    data: {
-      vehicleId,
-      type: data.type ?? "CUSTOM",
-      title: data.title,
-      dueDate: data.dueDate,
-      dueMileage: data.dueMileage,
-      notes: data.notes,
-    },
+  const reminder = await repo.dbCreateReminder(vehicleId, {
+    type: data.type ?? "CUSTOM",
+    title: data.title,
+    dueDate: data.dueDate,
+    dueMileage: data.dueMileage,
+    notes: data.notes,
   })
+  await logAudit(userId, "CREATE", "REMINDER", reminder.id)
+  return reminder
 }
 
-type UpdateReminderData = {
-  status?: "OPEN" | "DONE"
-  title?: string
-  dueDate?: Date | null
-  dueMileage?: number | null
-  notes?: string | null
-}
-
-export async function updateReminder(userId: string, id: string, data: UpdateReminderData) {
-  const r = await prisma.reminder.findFirst({
-    where: { id, vehicle: { userId } },
-    select: { id: true },
-  })
+export async function updateReminder(
+  userId: string,
+  id: string,
+  data: {
+    status?: ReminderStatus
+    title?: string
+    dueDate?: Date | null
+    dueMileage?: number | null
+    notes?: string | null
+  }
+) {
+  const r = await repo.dbFindReminder(id, userId)
   if (!r) return null
 
-  return prisma.reminder.update({
-    where: { id },
-    data,
-  })
+  const updated = await repo.dbUpdateReminder(id, data)
+  await logAudit(userId, "UPDATE", "REMINDER", id)
+  return updated
 }
 
 export async function deleteReminder(userId: string, id: string) {
-  const r = await prisma.reminder.findFirst({
-    where: { id, vehicle: { userId } },
-    select: { id: true },
-  })
+  const r = await repo.dbFindReminder(id, userId)
   if (!r) return null
 
-  await prisma.reminder.delete({ where: { id } })
+  await repo.dbDeleteReminder(id)
+  await logAudit(userId, "DELETE", "REMINDER", id)
   return true
 }
 
 export async function listUpcomingReminders(userId: string) {
-  // V1: uniquement dueDate (simple)
   const now = new Date()
-  const in30 = new Date(now)
-  in30.setDate(in30.getDate() + 30)
+  const in30Days = new Date(now)
+  in30Days.setDate(in30Days.getDate() + 30)
 
-  return prisma.reminder.findMany({
-    where: {
-      status: "OPEN",
-      vehicle: { userId },
-      dueDate: { gte: now, lte: in30 },
-    },
-    include: {
-      vehicle: { select: { id: true, make: true, model: true } },
-    },
-    orderBy: { dueDate: "asc" },
-    take: 10,
-  })
+  return repo.dbListUpcomingReminders(userId, now, in30Days)
 }
