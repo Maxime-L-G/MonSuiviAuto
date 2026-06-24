@@ -49,20 +49,21 @@ export function Garages() {
         setPosition({ lat, lon })
 
         try {
-          const query = `
-            [out:json];
-            (
-              node["shop"="car_repair"](around:5000,${lat},${lon});
-              node["amenity"="car_repair"](around:5000,${lat},${lon});
-              node["craft"="car_painter"](around:5000,${lat},${lon});
-              node["shop"="car"](around:5000,${lat},${lon});
-              node["craft"="car_repair"](around:5000,${lat},${lon});
-            );
-            out;
-          `
-          const res = await fetch(
-            `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
-          )
+          const query =
+            `[out:json];(` +
+            `node["shop"="car_repair"](around:5000,${lat},${lon});` +
+            `node["amenity"="car_repair"](around:5000,${lat},${lon});` +
+            `node["craft"="car_painter"](around:5000,${lat},${lon});` +
+            `node["shop"="car"](around:5000,${lat},${lon});` +
+            `node["craft"="car_repair"](around:5000,${lat},${lon});` +
+            `);out;`
+
+          const res = await fetch("https://overpass-api.de/api/interpreter", {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: query,
+          })
+          if (!res.ok) throw new Error("OVERPASS_ERROR")
           const data = await res.json()
           setGarages(data.elements ?? [])
         } catch {
