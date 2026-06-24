@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
+import { apiFetch } from "../lib/api"
 
 import markerIconUrl from "leaflet/dist/images/marker-icon.png"
 import markerShadowUrl from "leaflet/dist/images/marker-shadow.png"
@@ -49,29 +50,10 @@ export function Garages() {
         setPosition({ lat, lon })
 
         try {
-          const query =
-            `[out:json];(` +
-            `node["shop"="car_repair"](around:5000,${lat},${lon});` +
-            `node["amenity"="car_repair"](around:5000,${lat},${lon});` +
-            `node["craft"="car_painter"](around:5000,${lat},${lon});` +
-            `node["shop"="car"](around:5000,${lat},${lon});` +
-            `node["craft"="car_repair"](around:5000,${lat},${lon});` +
-            `);out;`
-
-          const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), 12000)
-
-          const res = await fetch("https://overpass.openstreetmap.fr/api/interpreter", {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: query,
-            signal: controller.signal,
-          })
-          clearTimeout(timeoutId)
-
-          if (!res.ok) throw new Error("OVERPASS_ERROR")
-          const data = await res.json()
-          setGarages(data.elements ?? [])
+          const data = await apiFetch<{ garages: Garage[] }>(
+            `/garages?lat=${lat}&lon=${lon}`
+          )
+          setGarages(data.garages ?? [])
         } catch {
           setError("Le service de garages est trop lent ou indisponible pour le moment. Réessaie plus tard.")
         } finally {
