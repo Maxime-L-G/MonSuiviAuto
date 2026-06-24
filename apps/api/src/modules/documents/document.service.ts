@@ -9,17 +9,32 @@ export async function listDocuments(userId: string, vehicleId: string) {
   return repo.dbListDocuments(vehicleId)
 }
 
+function uploadToCloudinary(buffer: Buffer): Promise<{ publicId: string; url: string }> {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "monsuiviauto", resource_type: "auto" },
+      (error, result) => {
+        if (error || !result) return reject(error)
+        resolve({ publicId: result.public_id, url: result.secure_url })
+      }
+    )
+    stream.end(buffer)
+  })
+}
+
 export async function createDocument(
   userId: string,
   vehicleId: string,
-  file: { filename: string; path: string; originalname: string; mimetype: string; size: number }
+  file: { buffer: Buffer; originalname: string; mimetype: string; size: number }
 ) {
   const vehicle = await repo.dbFindVehicleOwned(vehicleId, userId)
   if (!vehicle) return null
 
+  const uploaded = await uploadToCloudinary(file.buffer)
+
   const document = await repo.dbCreateDocument(vehicleId, {
-    filename: file.filename,
-    url: file.path,
+    filename: uploaded.publicId,
+    url: uploaded.url,
     originalName: file.originalname,
     mimeType: file.mimetype,
     sizeBytes: file.size,
