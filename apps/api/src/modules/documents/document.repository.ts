@@ -13,7 +13,7 @@ export async function dbListDocuments(vehicleId: string) {
 
 export async function dbCreateDocument(
   vehicleId: string,
-  data: { filename: string; originalName: string; mimeType: string; sizeBytes: number }
+  data: { filename: string; url: string; originalName: string; mimeType: string; sizeBytes: number }
 ) {
   return prisma.document.create({ data: { vehicleId, ...data } })
 }

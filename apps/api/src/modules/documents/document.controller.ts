@@ -1,7 +1,5 @@
 import { Request, Response } from "express"
-import path from "path"
 import * as service from "./document.service"
-import { UPLOAD_DIR } from "../../config/upload"
 
 export async function list(req: Request, res: Response) {
   const userId = req.user!.id
@@ -21,7 +19,7 @@ export async function create(req: Request, res: Response) {
     return res.status(400).json({ error: "FILE_REQUIRED" })
   }
 
-  const document = await service.createDocument(userId, vehicleId, req.file)
+  const document = await service.createDocument(userId, vehicleId, req.file as never)
   if (!document) return res.status(404).json({ error: "VEHICLE_NOT_FOUND" })
 
   return res.status(201).json({ document })
@@ -34,7 +32,7 @@ export async function download(req: Request, res: Response) {
   const document = await service.getDocumentForDownload(userId, id)
   if (!document) return res.status(404).json({ error: "DOCUMENT_NOT_FOUND" })
 
-  return res.download(path.join(UPLOAD_DIR, document.filename), document.originalName)
+  return res.redirect(document.url)
 }
 
 export async function remove(req: Request, res: Response) {

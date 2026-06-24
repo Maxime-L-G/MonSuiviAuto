@@ -1,17 +1,15 @@
 import multer from "multer"
-import path from "path"
-import { randomUUID } from "crypto"
-
-const UPLOAD_DIR = path.join(__dirname, "../../uploads")
+import { CloudinaryStorage } from "multer-storage-cloudinary"
+import { cloudinary } from "./cloudinary"
 
 const ALLOWED_MIME_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname)
-    cb(null, `${randomUUID()}${ext}`)
-  },
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "monsuiviauto",
+    resource_type: "auto",
+  } as never,
 })
 
 export const upload = multer({
@@ -24,5 +22,3 @@ export const upload = multer({
     cb(null, true)
   },
 })
-
-export { UPLOAD_DIR }

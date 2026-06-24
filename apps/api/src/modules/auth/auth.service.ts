@@ -1,10 +1,8 @@
 import bcrypt from "bcrypt"
 import jwt, { SignOptions, Secret } from "jsonwebtoken"
 import { Role } from "@prisma/client"
-import fs from "fs/promises"
-import path from "path"
 import * as repo from "./auth.repository"
-import { UPLOAD_DIR } from "../../config/upload"
+import { cloudinary } from "../../config/cloudinary"
 
 function getJwtSecret(): Secret {
   const secret = process.env.JWT_SECRET
@@ -51,9 +49,7 @@ export async function deleteAccount(userId: string) {
   const documents = await repo.dbListDocumentFilenames(userId)
 
   await Promise.all(
-    documents.map((doc) =>
-      fs.unlink(path.join(UPLOAD_DIR, doc.filename)).catch(() => {})
-    )
+    documents.map((doc) => cloudinary.uploader.destroy(doc.filename).catch(() => {}))
   )
 
   await repo.dbDeleteUser(userId)
