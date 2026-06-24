@@ -58,6 +58,7 @@ export function AppLayout() {
   const user = getUser()
   const isAdmin = user?.role === "ADMIN"
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   async function handleExportData() {
     const token = getToken()
@@ -80,39 +81,81 @@ export function AppLayout() {
     nav("/", { replace: true })
   }
 
+  function closeMobile() {
+    setMobileOpen(false)
+  }
+
   return (
     <div className="h-full bg-[radial-gradient(ellipse_at_top,rgba(37,99,235,0.14),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(2,132,199,0.10),transparent_55%)]">
-      <div className="h-full grid grid-cols-[280px_1fr]">
-        <aside className="flex flex-col border-r border-border bg-slate-950/90 text-slate-100 backdrop-blur">
+      <div className="h-full flex flex-col md:grid md:grid-cols-[280px_1fr]">
+
+        {/* Barre mobile avec bouton menu */}
+        <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-slate-950/90 text-slate-100">
+          <div className="text-base font-semibold tracking-tight">MonSuiviAuto</div>
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-2 rounded-lg hover:bg-white/10"
+            aria-label="Ouvrir le menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Overlay mobile */}
+        {mobileOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-slate-950/60 z-40"
+            onClick={closeMobile}
+          />
+        )}
+
+        <aside
+          className={`fixed md:static inset-y-0 left-0 z-50 w-70 flex flex-col border-r border-border bg-slate-950/95 md:bg-slate-950/90 text-slate-100 backdrop-blur transition-transform duration-200 ${
+            mobileOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0`}
+        >
 
           {/* Logo */}
-          <div className="px-6 py-5 border-b border-white/5">
-            <div className="text-base font-semibold tracking-tight">MonSuiviAuto</div>
-            <div className="text-xs text-slate-400 mt-0.5">Gestion & suivi automobile</div>
+          <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">
+            <div>
+              <div className="text-base font-semibold tracking-tight">MonSuiviAuto</div>
+              <div className="text-xs text-slate-400 mt-0.5">Gestion & suivi automobile</div>
+            </div>
+            <button
+              onClick={closeMobile}
+              className="md:hidden p-1.5 rounded-lg hover:bg-white/10"
+              aria-label="Fermer le menu"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto px-3 py-4">
             <NavSection title="Général">
-              <NavLink to="/app" end className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
+              <NavLink to="/app" end onClick={closeMobile} className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
                 <Icon d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 Dashboard
               </NavLink>
             </NavSection>
 
             <NavSection title="Mes véhicules">
-              <NavLink to="/app/vehicles" end className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
+              <NavLink to="/app/vehicles" end onClick={closeMobile} className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
                 <Icon d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM3 10h1l1-4h12l1 4h1M5 10h14" />
                 Véhicules
               </NavLink>
-              <NavLink to="/app/vehicles/archived" className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
+              <NavLink to="/app/vehicles/archived" onClick={closeMobile} className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
                 <Icon d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                 Véhicules archivés
               </NavLink>
             </NavSection>
 
             <NavSection title="Services">
-              <NavLink to="/app/garages" className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
+              <NavLink to="/app/garages" onClick={closeMobile} className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
                 <Icon d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 Garages proches
               </NavLink>
@@ -120,7 +163,7 @@ export function AppLayout() {
 
             {isAdmin && (
               <NavSection title="Administration">
-                <NavLink to="/app/admin" className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
+                <NavLink to="/app/admin" onClick={closeMobile} className={({ isActive }) => `${navBase} ${isActive ? navActive : "text-slate-300"}`}>
                   <Icon d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   Utilisateurs
                 </NavLink>
@@ -146,7 +189,7 @@ export function AppLayout() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <button
                 onClick={handleExportData}
                 className="text-xs text-slate-500 hover:text-white transition"
@@ -163,7 +206,7 @@ export function AppLayout() {
           </div>
         </aside>
 
-        <main className="p-6 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>
