@@ -15,6 +15,7 @@ import { garagesRouter } from "./modules/garages/garages.routes"
 
 export function createApp() {
   const app = express()
+  app.set("trust proxy", 1)
 
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
