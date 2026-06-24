@@ -56,6 +56,7 @@ model Document {
   id           String   @id @default(cuid())
   vehicleId    String
   filename     String
+  url          String
   originalName String
   mimeType     String
   sizeBytes    Int
