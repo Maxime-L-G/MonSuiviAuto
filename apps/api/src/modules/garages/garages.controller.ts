@@ -12,7 +12,8 @@ export async function list(req: Request, res: Response) {
   try {
     const garages = await service.findNearbyGarages(lat, lon)
     return res.json({ garages })
-  } catch {
+  } catch (e) {
+    console.error("Overpass error:", e)
     return res.status(503).json({ error: "GARAGES_SERVICE_UNAVAILABLE" })
   }
 }
