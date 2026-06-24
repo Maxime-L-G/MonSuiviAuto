@@ -21,7 +21,10 @@ export async function findNearbyGarages(lat: number, lon: number) {
       signal: controller.signal,
     })
 
-    if (!res.ok) throw new Error("OVERPASS_ERROR")
+    if (!res.ok) {
+      const body = await res.text().catch(() => "")
+      throw new Error(`OVERPASS_ERROR ${res.status} ${body.slice(0, 200)}`)
+    }
 
     const data = await res.json()
     return data.elements ?? []
