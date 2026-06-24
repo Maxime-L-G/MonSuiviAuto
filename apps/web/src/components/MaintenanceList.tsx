@@ -76,7 +76,7 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
       </div>
 
       {items.length > 0 && (
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <select
             className="input-field"
             value={filterType}

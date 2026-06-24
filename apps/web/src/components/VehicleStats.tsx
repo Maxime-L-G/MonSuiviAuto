@@ -77,7 +77,7 @@ export function VehicleStats({ vehicleId }: { vehicleId: string }) {
 
   return (
     <div className="rounded-2xl border border-border bg-surface p-5 space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <div className="text-base font-semibold">Statistiques du véhicule</div>
           <div className="text-xs text-muted">Basé sur {maintenances.length} entretien{maintenances.length > 1 ? "s" : ""}</div>
@@ -88,7 +88,7 @@ export function VehicleStats({ vehicleId }: { vehicleId: string }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-[1fr_200px] gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_200px] gap-5">
         <div>
           <div className="text-sm font-medium mb-3">Dépenses par mois</div>
           <ResponsiveContainer width="100%" height={180}>
