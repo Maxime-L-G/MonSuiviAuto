@@ -95,17 +95,17 @@ export function Admin() {
           {users.map((u) => (
             <div
               key={u.id}
-              className="rounded-xl border border-border bg-white p-4 flex items-center justify-between"
+              className="rounded-xl border border-border bg-white p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
             >
-              <div>
-                <div className="font-medium">{u.email}</div>
+              <div className="min-w-0">
+                <div className="font-medium truncate">{u.email}</div>
                 <div className="mt-1 text-sm text-muted">
                   Inscrit le {new Date(u.createdAt).toLocaleDateString()} ·{" "}
                   {u._count.vehicles} véhicule{u._count.vehicles > 1 ? "s" : ""}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs ${ROLE_CLASS[u.role]}`}>
                   {ROLE_LABELS[u.role]}
                 </span>
