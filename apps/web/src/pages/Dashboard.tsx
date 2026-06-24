@@ -73,7 +73,7 @@ export function Dashboard() {
     <div className="space-y-5">
 
       {/* KPI cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Véhicules actifs", value: data?.vehiclesCount ?? "…", border: "border-l-blue-500" },
           { label: "Entretiens effectués", value: data?.maintenancesCount ?? "…", border: "border-l-violet-500" },
@@ -91,7 +91,7 @@ export function Dashboard() {
       </div>
 
       {/* Chart + Répartition */}
-      <div className="grid grid-cols-[1fr_300px] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
 
         {/* Bar chart */}
         <div className="rounded-2xl border border-border bg-surface/80 backdrop-blur p-5 shadow-sm">

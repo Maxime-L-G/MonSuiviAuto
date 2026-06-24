@@ -204,7 +204,7 @@ export function Vehicles() {
             vehicles.map((v) => (
               <div
                 key={v.id}
-                className="rounded-xl border border-border bg-white/70 p-4 flex items-center justify-between"
+                className="rounded-xl border border-border bg-white/70 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
               >
                 <div>
                   <div className="font-medium">
@@ -223,7 +223,7 @@ export function Vehicles() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button className="btn-secondary py-1.5" onClick={() => openEdit(v)}>
                     Modifier
                   </button>
