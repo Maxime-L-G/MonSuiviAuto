@@ -1,4 +1,4 @@
-const OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter"
+const OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
 export async function findNearbyGarages(lat: number, lon: number) {
   const query =
@@ -11,7 +11,7 @@ export async function findNearbyGarages(lat: number, lon: number) {
     `);out;`
 
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 12000)
+  const timeoutId = setTimeout(() => controller.abort(), 20000)
 
   try {
     const res = await fetch(OVERPASS_URL, {
