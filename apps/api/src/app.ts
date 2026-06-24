@@ -21,7 +21,8 @@ export function createApp() {
     message: { error: "TOO_MANY_REQUESTS" },
   })
 
-  app.use(cors())
+  const frontendUrl = process.env.FRONTEND_URL
+  app.use(cors({ origin: frontendUrl || true }))
   app.use(helmet())
   app.use(express.json())
 
