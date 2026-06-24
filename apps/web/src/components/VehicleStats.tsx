@@ -102,7 +102,7 @@ export function VehicleStats({ vehicleId }: { vehicleId: string }) {
                 tickFormatter={(v) => `${v} €`}
               />
               <Tooltip
-                formatter={(v: number) => [`${v.toFixed(2)} €`, "Dépenses"]}
+                formatter={(v) => [`${Number(v).toFixed(2)} €`, "Dépenses"]}
                 contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: 12 }}
               />
               <Bar dataKey="Dépenses" fill="#2563EB" radius={[5, 5, 0, 0]} />
