@@ -16,7 +16,11 @@ export async function findNearbyGarages(lat: number, lon: number) {
   try {
     const res = await fetch(OVERPASS_URL, {
       method: "POST",
-      headers: { "Content-Type": "text/plain", Accept: "*/*" },
+      headers: {
+        "Content-Type": "text/plain",
+        Accept: "*/*",
+        "User-Agent": "MonSuiviAuto/1.0 (school project, vehicle maintenance tracker)",
+      },
       body: query,
       signal: controller.signal,
     })
