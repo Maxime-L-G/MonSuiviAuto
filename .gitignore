@@ -17,7 +17,3 @@ yarn-error.log*
 
 # Docker
 mysql_data
-
-# Uploads
-apps/api/uploads/*
-!apps/api/uploads/.gitkeep
