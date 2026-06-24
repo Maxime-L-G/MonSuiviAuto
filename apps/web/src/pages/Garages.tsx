@@ -58,16 +58,22 @@ export function Garages() {
             `node["craft"="car_repair"](around:5000,${lat},${lon});` +
             `);out;`
 
-          const res = await fetch("https://overpass.kumi.systems/api/interpreter", {
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 12000)
+
+          const res = await fetch("https://overpass.openstreetmap.fr/api/interpreter", {
             method: "POST",
             headers: { "Content-Type": "text/plain" },
             body: query,
+            signal: controller.signal,
           })
+          clearTimeout(timeoutId)
+
           if (!res.ok) throw new Error("OVERPASS_ERROR")
           const data = await res.json()
           setGarages(data.elements ?? [])
         } catch {
-          setError("Impossible de charger les garages.")
+          setError("Le service de garages est trop lent ou indisponible pour le moment. Réessaie plus tard.")
         } finally {
           setLoading(false)
         }
