@@ -11,6 +11,7 @@ const ArchivedVehicles = lazy(() => import("./pages/ArchivedVehicles").then((m) 
 const Admin = lazy(() => import("./pages/Admin").then((m) => ({ default: m.Admin })))
 const Garages = lazy(() => import("./pages/Garages").then((m) => ({ default: m.Garages })))
 const VehicleDetails = lazy(() => import("./pages/VehicleDetails").then((m) => ({ default: m.VehicleDetails })))
+const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal })))
 
 function PageLoader() {
   return <div className="p-6 text-sm text-muted">Chargement…</div>
@@ -23,6 +24,7 @@ function Lazy({ children }: { children: React.ReactNode }) {
 export const router = createBrowserRouter([
   { path: "/", element: <Lazy><Login /></Lazy> },
   { path: "/register", element: <Lazy><Register /></Lazy> },
+  { path: "/legal", element: <Lazy><Legal /></Lazy> },
   {
     element: <RequireAuth />,
     children: [

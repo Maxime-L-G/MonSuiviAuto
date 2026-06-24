@@ -71,6 +71,12 @@ export function Login() {
             S'inscrire
           </Link>
         </p>
+
+        <p className="mt-2 text-center text-xs text-muted">
+          <Link to="/legal" className="hover:underline">
+            Mentions légales & confidentialité
+          </Link>
+        </p>
       </div>
     </div>
   )
