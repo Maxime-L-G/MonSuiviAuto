@@ -2,6 +2,8 @@ import express from "express"
 import cors from "cors"
 import helmet from "helmet"
 import rateLimit from "express-rate-limit"
+import swaggerUi from "swagger-ui-express"
+import { swaggerSpec } from "./config/swagger"
 import { authRouter } from "./modules/auth/auth.routes"
 import { vehicleRouter } from "./modules/vehicles/vehicle.route"
 import { maintenanceRouter } from "./modules/maintenances/maintenance.routes"
@@ -24,6 +26,8 @@ export function createApp() {
   app.use(express.json())
 
   app.get("/health", (_, res) => res.json({ status: "OK", app: "MonSuiviAuto API" }))
+
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
   app.use("/auth", authLimiter, authRouter)
 
