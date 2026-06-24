@@ -58,7 +58,7 @@ export function Garages() {
             `node["craft"="car_repair"](around:5000,${lat},${lon});` +
             `);out;`
 
-          const res = await fetch("https://overpass-api.de/api/interpreter", {
+          const res = await fetch("https://overpass.kumi.systems/api/interpreter", {
             method: "POST",
             headers: { "Content-Type": "text/plain" },
             body: query,
