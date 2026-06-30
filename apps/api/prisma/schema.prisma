@@ -118,6 +118,7 @@ model Reminder {
   dueMileage  Int?
 
   notes       String?        @db.Text
+  emailSentAt DateTime?
 
   vehicle     Vehicle        @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 

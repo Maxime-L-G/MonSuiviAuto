@@ -12,6 +12,7 @@ import { reminderRouter } from "./modules/reminders/reminder.routes"
 import { adminRouter } from "./modules/admin/admin.routes"
 import { documentRouter } from "./modules/documents/document.routes"
 import { garagesRouter } from "./modules/garages/garages.routes"
+import { notificationRouter } from "./modules/notifications/notification.routes"
 
 export function createApp() {
   const app = express()
@@ -41,6 +42,7 @@ export function createApp() {
   app.use("/admin", adminRouter)
   app.use(documentRouter)
   app.use(garagesRouter)
+  app.use(notificationRouter)
 
   return app
 }
