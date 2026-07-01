@@ -24,7 +24,7 @@ const TYPE_LABELS: Record<MaintenanceType, string> = {
   OTHER: "Autre",
 }
 
-export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
+export function MaintenanceList({ vehicleId, onMaintenanceChange }: { vehicleId: string; onMaintenanceChange?: () => void }) {
   const [items, setItems] = useState<Maintenance[]>([])
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Maintenance | null>(null)
@@ -148,7 +148,7 @@ export function MaintenanceList({ vehicleId }: { vehicleId: string }) {
         open={formOpen}
         onClose={() => setFormOpen(false)}
         vehicleId={vehicleId}
-        onCreated={load}
+        onCreated={() => { void load(); onMaintenanceChange?.() }}
         initial={editing ?? undefined}
       />
     </div>
