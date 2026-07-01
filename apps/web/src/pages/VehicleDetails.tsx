@@ -25,6 +25,7 @@ const USAGE_LABELS: Record<VehicleUsage, string> = {
 export function VehicleDetails() {
   const { id } = useParams<{ id: string }>()
   const [vehicle, setVehicle] = useState<Vehicle | null>(null)
+  const [statsKey, setStatsKey] = useState(0)
 
   useEffect(() => {
     if (!id) return
@@ -55,8 +56,8 @@ export function VehicleDetails() {
         </div>
       </div>
 
-      <VehicleStats vehicleId={vehicle.id} />
-      <MaintenanceList vehicleId={vehicle.id} />
+      <VehicleStats vehicleId={vehicle.id} refreshKey={statsKey} />
+      <MaintenanceList vehicleId={vehicle.id} onMaintenanceChange={() => setStatsKey(k => k + 1)} />
       <ReminderList vehicleId={vehicle.id} currentKm={vehicle.currentKm} />
       <DocumentList vehicleId={vehicle.id} />
     </div>
