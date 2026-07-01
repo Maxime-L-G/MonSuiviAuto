@@ -46,24 +46,26 @@ export function Login() {
           </div>
         )}
 
-        <label className="text-sm font-medium">Email</label>
-        <input
-          className="mt-1 mb-4 input-field"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={(e) => { e.preventDefault(); void onSubmit() }}>
+          <label className="text-sm font-medium">Email</label>
+          <input
+            className="mt-1 mb-4 input-field"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <label className="text-sm font-medium">Mot de passe</label>
-        <input
-          type="password"
-          className="mt-1 mb-6 input-field"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <label className="text-sm font-medium">Mot de passe</label>
+          <input
+            type="password"
+            className="mt-1 mb-6 input-field"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <button className="w-full btn-primary py-2" onClick={onSubmit} disabled={loading}>
-          {loading ? "Connexion..." : "Se connecter"}
-        </button>
+          <button type="submit" className="w-full btn-primary py-2" disabled={loading}>
+            {loading ? "Connexion..." : "Se connecter"}
+          </button>
+        </form>
 
         <p className="mt-4 text-center text-sm text-muted">
           Pas encore de compte ?{" "}
