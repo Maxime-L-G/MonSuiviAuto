@@ -36,14 +36,14 @@ function fmt(cents: number) {
   return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 }
 
-export function VehicleStats({ vehicleId }: { vehicleId: string }) {
+export function VehicleStats({ vehicleId, refreshKey }: { vehicleId: string; refreshKey?: number }) {
   const [maintenances, setMaintenances] = useState<Maintenance[]>([])
 
   useEffect(() => {
     apiFetch<{ maintenances: Maintenance[] }>(`/vehicles/${vehicleId}/maintenances`)
       .then((r) => setMaintenances(r.maintenances))
       .catch(() => {})
-  }, [vehicleId])
+  }, [vehicleId, refreshKey])
 
   if (maintenances.length === 0) return null
 
