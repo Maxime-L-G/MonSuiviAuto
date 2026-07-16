@@ -61,7 +61,7 @@ function typeLabel(t: Reminder["type"]) {
   return map[t]
 }
 
-export function ReminderList({ vehicleId, currentKm }: { vehicleId: string; currentKm: number }) {
+export function ReminderList({ vehicleId, currentKm, refreshKey }: { vehicleId: string; currentKm: number; refreshKey?: number }) {
   const [items, setItems] = useState<Reminder[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -84,7 +84,7 @@ export function ReminderList({ vehicleId, currentKm }: { vehicleId: string; curr
 
   useEffect(() => {
     void load()
-  }, [load])
+  }, [load, refreshKey])
 
   async function markDone(r: Reminder) {
     await apiFetch(`/reminders/${r.id}`, {
