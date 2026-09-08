@@ -98,7 +98,7 @@ export function Register() {
 
         <p className="mt-4 text-center text-sm text-muted">
           Déjà un compte ?{" "}
-          <Link to="/" className="text-primary hover:underline font-medium">
+          <Link to="/login" className="text-primary hover:underline font-medium">
             Se connecter
           </Link>
         </p>
