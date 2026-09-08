@@ -3,6 +3,6 @@ import { getToken } from "../lib/api"
 
 export function RequireAuth() {
   const token = getToken()
-  if (!token) return <Navigate to="/" replace />
+  if (!token) return <Navigate to="/login" replace />
   return <Outlet />
 }

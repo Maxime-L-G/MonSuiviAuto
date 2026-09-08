@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom"
 import { AppLayout } from "./app/AppLayout"
 import { RequireAuth } from "./app/RequireAuth"
 
+const Landing = lazy(() => import("./pages/Landing").then((m) => ({ default: m.Landing })))
 const Login = lazy(() => import("./pages/Login").then((m) => ({ default: m.Login })))
 const Register = lazy(() => import("./pages/Register").then((m) => ({ default: m.Register })))
 const Dashboard = lazy(() => import("./pages/Dashboard").then((m) => ({ default: m.Dashboard })))
@@ -22,7 +23,8 @@ function Lazy({ children }: { children: React.ReactNode }) {
 }
 
 export const router = createBrowserRouter([
-  { path: "/", element: <Lazy><Login /></Lazy> },
+  { path: "/", element: <Lazy><Landing /></Lazy> },
+  { path: "/login", element: <Lazy><Login /></Lazy> },
   { path: "/register", element: <Lazy><Register /></Lazy> },
   { path: "/legal", element: <Lazy><Legal /></Lazy> },
   {
